@@ -1,0 +1,719 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A14F123F2D99E1BF0095D042 /* BioMirrorTherapyWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = A14F12322D99E1BE0095D042 /* BioMirrorTherapyWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A11C88962D99B864002380A8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A11C88782D99B862002380A8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A11C887F2D99B862002380A8;
+			remoteInfo = BioMirrorTherapy;
+		};
+		A11C88A02D99B864002380A8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A11C88782D99B862002380A8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A11C887F2D99B862002380A8;
+			remoteInfo = BioMirrorTherapy;
+		};
+		A14F123D2D99E1BF0095D042 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A11C88782D99B862002380A8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A14F12312D99E1BE0095D042;
+			remoteInfo = "BioMirrorTherapyWatch Watch App";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A14F12432D99E1BF0095D042 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				A14F123F2D99E1BF0095D042 /* BioMirrorTherapyWatch Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		A11C88802D99B862002380A8 /* BioMirrorTherapy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BioMirrorTherapy.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A11C88952D99B864002380A8 /* BioMirrorTherapyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BioMirrorTherapyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A11C889F2D99B864002380A8 /* BioMirrorTherapyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BioMirrorTherapyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A14F12322D99E1BE0095D042 /* BioMirrorTherapyWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BioMirrorTherapyWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		A11C88822D99B862002380A8 /* BioMirrorTherapy */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = BioMirrorTherapy;
+			sourceTree = "<group>";
+		};
+		A11C88982D99B864002380A8 /* BioMirrorTherapyTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = BioMirrorTherapyTests;
+			sourceTree = "<group>";
+		};
+		A11C88A22D99B864002380A8 /* BioMirrorTherapyUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = BioMirrorTherapyUITests;
+			sourceTree = "<group>";
+		};
+		A14F12332D99E1BE0095D042 /* BioMirrorTherapyWatch Watch App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "BioMirrorTherapyWatch Watch App";
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A11C887D2D99B862002380A8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A11C88922D99B864002380A8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A11C889C2D99B864002380A8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A14F122F2D99E1BE0095D042 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A11C88772D99B862002380A8 = {
+			isa = PBXGroup;
+			children = (
+				A11C88822D99B862002380A8 /* BioMirrorTherapy */,
+				A11C88982D99B864002380A8 /* BioMirrorTherapyTests */,
+				A11C88A22D99B864002380A8 /* BioMirrorTherapyUITests */,
+				A14F12332D99E1BE0095D042 /* BioMirrorTherapyWatch Watch App */,
+				A11C88812D99B862002380A8 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A11C88812D99B862002380A8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A11C88802D99B862002380A8 /* BioMirrorTherapy.app */,
+				A11C88952D99B864002380A8 /* BioMirrorTherapyTests.xctest */,
+				A11C889F2D99B864002380A8 /* BioMirrorTherapyUITests.xctest */,
+				A14F12322D99E1BE0095D042 /* BioMirrorTherapyWatch Watch App.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A11C887F2D99B862002380A8 /* BioMirrorTherapy */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A11C88A92D99B864002380A8 /* Build configuration list for PBXNativeTarget "BioMirrorTherapy" */;
+			buildPhases = (
+				A11C887C2D99B862002380A8 /* Sources */,
+				A11C887D2D99B862002380A8 /* Frameworks */,
+				A11C887E2D99B862002380A8 /* Resources */,
+				A14F12432D99E1BF0095D042 /* Embed Watch Content */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A14F123E2D99E1BF0095D042 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				A11C88822D99B862002380A8 /* BioMirrorTherapy */,
+			);
+			name = BioMirrorTherapy;
+			packageProductDependencies = (
+			);
+			productName = BioMirrorTherapy;
+			productReference = A11C88802D99B862002380A8 /* BioMirrorTherapy.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A11C88942D99B864002380A8 /* BioMirrorTherapyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A11C88AC2D99B864002380A8 /* Build configuration list for PBXNativeTarget "BioMirrorTherapyTests" */;
+			buildPhases = (
+				A11C88912D99B864002380A8 /* Sources */,
+				A11C88922D99B864002380A8 /* Frameworks */,
+				A11C88932D99B864002380A8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A11C88972D99B864002380A8 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				A11C88982D99B864002380A8 /* BioMirrorTherapyTests */,
+			);
+			name = BioMirrorTherapyTests;
+			packageProductDependencies = (
+			);
+			productName = BioMirrorTherapyTests;
+			productReference = A11C88952D99B864002380A8 /* BioMirrorTherapyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		A11C889E2D99B864002380A8 /* BioMirrorTherapyUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A11C88AF2D99B864002380A8 /* Build configuration list for PBXNativeTarget "BioMirrorTherapyUITests" */;
+			buildPhases = (
+				A11C889B2D99B864002380A8 /* Sources */,
+				A11C889C2D99B864002380A8 /* Frameworks */,
+				A11C889D2D99B864002380A8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A11C88A12D99B864002380A8 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				A11C88A22D99B864002380A8 /* BioMirrorTherapyUITests */,
+			);
+			name = BioMirrorTherapyUITests;
+			packageProductDependencies = (
+			);
+			productName = BioMirrorTherapyUITests;
+			productReference = A11C889F2D99B864002380A8 /* BioMirrorTherapyUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		A14F12312D99E1BE0095D042 /* BioMirrorTherapyWatch Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A14F12402D99E1BF0095D042 /* Build configuration list for PBXNativeTarget "BioMirrorTherapyWatch Watch App" */;
+			buildPhases = (
+				A14F122E2D99E1BE0095D042 /* Sources */,
+				A14F122F2D99E1BE0095D042 /* Frameworks */,
+				A14F12302D99E1BE0095D042 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A14F12332D99E1BE0095D042 /* BioMirrorTherapyWatch Watch App */,
+			);
+			name = "BioMirrorTherapyWatch Watch App";
+			packageProductDependencies = (
+			);
+			productName = "BioMirrorTherapyWatch Watch App";
+			productReference = A14F12322D99E1BE0095D042 /* BioMirrorTherapyWatch Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A11C88782D99B862002380A8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1620;
+				LastUpgradeCheck = 1620;
+				TargetAttributes = {
+					A11C887F2D99B862002380A8 = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					A11C88942D99B864002380A8 = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = A11C887F2D99B862002380A8;
+					};
+					A11C889E2D99B864002380A8 = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = A11C887F2D99B862002380A8;
+					};
+					A14F12312D99E1BE0095D042 = {
+						CreatedOnToolsVersion = 16.2;
+					};
+				};
+			};
+			buildConfigurationList = A11C887B2D99B862002380A8 /* Build configuration list for PBXProject "BioMirrorTherapy" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A11C88772D99B862002380A8;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = A11C88812D99B862002380A8 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A11C887F2D99B862002380A8 /* BioMirrorTherapy */,
+				A11C88942D99B864002380A8 /* BioMirrorTherapyTests */,
+				A11C889E2D99B864002380A8 /* BioMirrorTherapyUITests */,
+				A14F12312D99E1BE0095D042 /* BioMirrorTherapyWatch Watch App */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A11C887E2D99B862002380A8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A11C88932D99B864002380A8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A11C889D2D99B864002380A8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A14F12302D99E1BE0095D042 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A11C887C2D99B862002380A8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A11C88912D99B864002380A8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A11C889B2D99B864002380A8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A14F122E2D99E1BE0095D042 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A11C88972D99B864002380A8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A11C887F2D99B862002380A8 /* BioMirrorTherapy */;
+			targetProxy = A11C88962D99B864002380A8 /* PBXContainerItemProxy */;
+		};
+		A11C88A12D99B864002380A8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A11C887F2D99B862002380A8 /* BioMirrorTherapy */;
+			targetProxy = A11C88A02D99B864002380A8 /* PBXContainerItemProxy */;
+		};
+		A14F123E2D99E1BF0095D042 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A14F12312D99E1BE0095D042 /* BioMirrorTherapyWatch Watch App */;
+			targetProxy = A14F123D2D99E1BF0095D042 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		A11C88A72D99B864002380A8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A11C88A82D99B864002380A8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A11C88AA2D99B864002380A8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"BioMirrorTherapy/Preview Content\"";
+				DEVELOPMENT_TEAM = 5RR382V6CX;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.coloapp.BioMirrorTherapy;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A11C88AB2D99B864002380A8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"BioMirrorTherapy/Preview Content\"";
+				DEVELOPMENT_TEAM = 5RR382V6CX;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.coloapp.BioMirrorTherapy;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		A11C88AD2D99B864002380A8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5RR382V6CX;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.coloapp.BioMirrorTherapyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BioMirrorTherapy.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BioMirrorTherapy";
+			};
+			name = Debug;
+		};
+		A11C88AE2D99B864002380A8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5RR382V6CX;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.coloapp.BioMirrorTherapyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BioMirrorTherapy.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BioMirrorTherapy";
+			};
+			name = Release;
+		};
+		A11C88B02D99B864002380A8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5RR382V6CX;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.coloapp.BioMirrorTherapyUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = BioMirrorTherapy;
+			};
+			name = Debug;
+		};
+		A11C88B12D99B864002380A8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5RR382V6CX;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.coloapp.BioMirrorTherapyUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = BioMirrorTherapy;
+			};
+			name = Release;
+		};
+		A14F12412D99E1BF0095D042 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"BioMirrorTherapyWatch Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = 5RR382V6CX;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = BioMirrorTherapyWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.coloapp.BioMirrorTherapy;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.coloapp.BioMirrorTherapy.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.2;
+			};
+			name = Debug;
+		};
+		A14F12422D99E1BF0095D042 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"BioMirrorTherapyWatch Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = 5RR382V6CX;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = BioMirrorTherapyWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.coloapp.BioMirrorTherapy;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.coloapp.BioMirrorTherapy.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.2;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A11C887B2D99B862002380A8 /* Build configuration list for PBXProject "BioMirrorTherapy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A11C88A72D99B864002380A8 /* Debug */,
+				A11C88A82D99B864002380A8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A11C88A92D99B864002380A8 /* Build configuration list for PBXNativeTarget "BioMirrorTherapy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A11C88AA2D99B864002380A8 /* Debug */,
+				A11C88AB2D99B864002380A8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A11C88AC2D99B864002380A8 /* Build configuration list for PBXNativeTarget "BioMirrorTherapyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A11C88AD2D99B864002380A8 /* Debug */,
+				A11C88AE2D99B864002380A8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A11C88AF2D99B864002380A8 /* Build configuration list for PBXNativeTarget "BioMirrorTherapyUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A11C88B02D99B864002380A8 /* Debug */,
+				A11C88B12D99B864002380A8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A14F12402D99E1BF0095D042 /* Build configuration list for PBXNativeTarget "BioMirrorTherapyWatch Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A14F12412D99E1BF0095D042 /* Debug */,
+				A14F12422D99E1BF0095D042 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A11C88782D99B862002380A8 /* Project object */;
+}
