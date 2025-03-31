@@ -243,7 +243,7 @@ class AdaptiveResponseGenerator: TherapeuticResponseService {
             
             return TherapeuticResponse(
                 timestamp: Date(),
-                responseType: .integration,
+                responseType: .mirroring,
                 characterEmotionalState: characterEmotion,
                 characterEmotionalIntensity: characterIntensity,
                 characterAction: action,
@@ -347,7 +347,7 @@ class AdaptiveResponseGenerator: TherapeuticResponseService {
         
         return TherapeuticResponse(
             timestamp: Date(),
-            responseType: .transfer,
+            responseType: .transition,
             characterEmotionalState: emotion,
             characterEmotionalIntensity: intensity * 0.7,
             characterAction: action,

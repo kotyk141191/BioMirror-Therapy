@@ -120,7 +120,7 @@ class DissociationDetector {
     }
     
     func getDissociationEpisodes(since date: Date) -> [DissociationEpisode] {
-        return recentDissociationEpisodes.filter { $0.startTime >= date }
+        return recentDissociationEpisodes.filter { $0.startTime ?? Date() >= date }
     }
     
     func getTotalDissociationTime(since date: Date) -> TimeInterval {

@@ -11,7 +11,7 @@ import UserNotifications
 class EmergencyContactManager {
     // MARK: - Properties
     
-    private(set) var hasEmergencyContact: Bool {
+    var hasEmergencyContact: Bool {
         return emergencyContactName != nil && emergencyContactPhone != nil
     }
     

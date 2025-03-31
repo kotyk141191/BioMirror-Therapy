@@ -11,14 +11,16 @@ enum SessionPhase: Int, CaseIterable {
     case connection = 0
     case awareness = 1
     case integration = 2
-    case transfer = 3
+    case regulation = 3
+    case transfer = 4
     
     var name: String {
         switch self {
-        case .connection: return "Connection Phase"
-        case .awareness: return "Awareness Phase"
-        case .integration: return "Integration Phase"
-        case .transfer: return "Transfer Phase"
+        case .connection: return "Connection"
+        case .awareness: return "Emotional Awareness"
+        case .integration: return "Emotional Integration"
+        case .regulation: return "Emotional Regulation"
+        case .transfer: return "Skill Transfer"
         }
     }
     
@@ -30,6 +32,8 @@ enum SessionPhase: Int, CaseIterable {
             return "Developing emotional recognition and vocabulary"
         case .integration:
             return "Connecting emotions with sensations and experiences"
+        case .regulation:
+            return "Modulating intense emotions through adaptive strategies"
         case .transfer:
             return "Applying skills to daily life scenarios"
         }
@@ -58,10 +62,17 @@ enum SessionPhase: Int, CaseIterable {
                 "Build regulation strategies",
                 "Practice emotional communication"
             ]
+        case .regulation:
+            return [
+                "Detect and address emotional dysregulation",
+                "Apply tailored regulation strategies",
+                "Modulate high emotional intensity",
+                "Reinforce adaptive emotional responses"
+            ]
         case .transfer:
             return [
                 "Apply skills to daily scenarios",
-                "Reduce dependency on system",
+                "Reduce dependency on the system",
                 "Develop sustainable regulation strategies",
                 "Plan for continued practice"
             ]
@@ -80,23 +91,30 @@ enum SessionPhase: Int, CaseIterable {
         case .awareness:
             return [
                 TherapeuticActivity(type: .emotionalExploration, name: "Emotion Explorer", description: "Explore different emotions"),
-                TherapeuticActivity(type: .bodyMapping, name: "Emotion Body Map", description: "Where do you feel emotions in your body?"),
+                TherapeuticActivity(type: .bodyMapping, name: "Emotion Body Map", description: "Identify where emotions are felt in your body"),
                 TherapeuticActivity(type: .emotionalVocabulary, name: "Emotion Words", description: "Learn words for different feelings"),
-                TherapeuticActivity(type: .mirroring, name: "Mirror My Feelings", description: "Character mirrors your emotions")
+                TherapeuticActivity(type: .mirroring, name: "Mirror My Feelings", description: "See the character mirror your emotions")
             ]
         case .integration:
             return [
-                TherapeuticActivity(type: .coherenceBuilding, name: "Match Yourself", description: "Match your face to your feelings"),
-                TherapeuticActivity(type: .grounding, name: "Grounding Tools", description: "Tools to stay present"),
-                TherapeuticActivity(type: .coRegulation, name: "Breathe Together", description: "Breathe with the character"),
-                TherapeuticActivity(type: .emotionalNarrative, name: "My Feelings Story", description: "Create a story about your emotions")
+                TherapeuticActivity(type: .coherenceBuilding, name: "Match Yourself", description: "Align your face with your feelings"),
+                TherapeuticActivity(type: .grounding, name: "Grounding Tools", description: "Use tools to stay present"),
+                TherapeuticActivity(type: .coRegulation, name: "Breathe Together", description: "Breathe in sync with the character"),
+                TherapeuticActivity(type: .emotionalNarrative, name: "My Feelings Story", description: "Create a narrative about your emotions")
+            ]
+        case .regulation:
+            return [
+                TherapeuticActivity(type: .regulationToolkit, name: "Calming Strategies", description: "Explore techniques to modulate strong emotions"),
+                TherapeuticActivity(type: .mindfulness, name: "Mindful Breathing", description: "Practice calming breathing exercises"),
+                TherapeuticActivity(type: .soothingVisuals, name: "Soothing Imagery", description: "View calming images to help regulate emotions"),
+                TherapeuticActivity(type: .guidedRelaxation, name: "Guided Relaxation", description: "Follow a guided session to reduce emotional intensity")
             ]
         case .transfer:
             return [
-                TherapeuticActivity(type: .scenarioSimulation, name: "Real Life Practice", description: "Practice with everyday situations"),
-                TherapeuticActivity(type: .regulationToolkit, name: "My Feelings Toolkit", description: "Create your personal coping tools"),
-                TherapeuticActivity(type: .progressCelebration, name: "Celebration Journey", description: "Celebrate what you've learned"),
-                TherapeuticActivity(type: .independentPractice, name: "Practice On My Own", description: "Try skills without the character")
+                TherapeuticActivity(type: .scenarioSimulation, name: "Real Life Practice", description: "Practice skills in everyday situations"),
+                TherapeuticActivity(type: .regulationToolkit, name: "My Feelings Toolkit", description: "Develop your personal coping tools"),
+                TherapeuticActivity(type: .progressCelebration, name: "Celebration Journey", description: "Celebrate your progress"),
+                TherapeuticActivity(type: .independentPractice, name: "Practice On My Own", description: "Apply skills independently")
             ]
         }
     }
