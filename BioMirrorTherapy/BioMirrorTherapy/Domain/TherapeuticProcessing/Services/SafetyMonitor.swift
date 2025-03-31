@@ -342,65 +342,65 @@ class SafetyMonitor {
         }
     }
     private func isExtremeArousal(_ state: IntegratedEmotionalState) -> Bool {
-           // Check for extremely high physiological arousal
-           if state.physiologicalState.arousalLevel > arousalThreshold {
-               // Also check heart rate
-               if state.physiologicalState.hrvMetrics.heartRate > 120 {
-                   return true
-               }
-           }
-           
-           return false
-       }
-       
-       private func handleSafetyEvent(_ event: SafetyEvent) {
-           // Determine appropriate alert level for the event
-           let newAlertLevel: AlertLevel
-           
-           switch event {
-           case .severeDistress:
-               newAlertLevel = .high
-           case .severeDissociation:
-               newAlertLevel = .medium
-           case .extremeArousal:
-               newAlertLevel = .medium
-           case .prolongedNegativeState:
-               newAlertLevel = .low
-           }
-           
-           // Only escalate alert level, never downgrade automatically
-           if newAlertLevel.rawValue > currentAlertLevel.rawValue {
-               currentAlertLevel = newAlertLevel
-               triggerSafetyProtocol(for: event, level: newAlertLevel)
-           }
-       }
-       
-       private func triggerSafetyProtocol(for event: SafetyEvent, level: AlertLevel) {
-           // Take appropriate action based on alert level
-           switch level {
-           case .high:
-               // High alert: notify parent and trigger system intervention
-               systemAlertsManager.triggerSessionTermination(reason: event.description)
-               emergencyContactManager.notifyParent(event: event)
-               
-           case .medium:
-               // Medium alert: flag for therapist review and notify parent if persistent
-               systemAlertsManager.triggerCalming(reason: event.description)
-               
-               // Only notify parent if persistent
-               if sessionStartTime != nil && Date().timeIntervalSince(sessionStartTime!) > 300 {
-                   emergencyContactManager.notifyParent(event: event)
-               }
-               
-           case .low:
-               // Low alert: flag for therapist review
-               systemAlertsManager.logSafetyEvent(event: event)
-               
-           case .none:
-               // No action needed
-               break
-           }
-       }
+        // Check for extremely high physiological arousal
+        if state.physiologicalState.arousalLevel > arousalThreshold {
+            // Also check heart rate
+            if state.physiologicalState.hrvMetrics.heartRate > 120 {
+                return true
+            }
+        }
+        
+        return false
+    }
+
+    private func handleSafetyEvent(_ event: SafetyEvent) {
+        // Determine appropriate alert level for the event
+        let newAlertLevel: AlertLevel
+        
+        switch event {
+        case .severeDistress:
+            newAlertLevel = .high
+        case .severeDissociation:
+            newAlertLevel = .medium
+        case .extremeArousal:
+            newAlertLevel = .medium
+        case .prolongedNegativeState:
+            newAlertLevel = .low
+        }
+        
+        // Only escalate alert level, never downgrade automatically
+        if newAlertLevel.rawValue > currentAlertLevel.rawValue {
+            currentAlertLevel = newAlertLevel
+            triggerSafetyProtocol(for: event, level: newAlertLevel)
+        }
+    }
+
+    private func triggerSafetyProtocol(for event: SafetyEvent, level: AlertLevel) {
+        // Take appropriate action based on alert level
+        switch level {
+        case .high:
+            // High alert: notify parent and trigger system intervention
+            systemAlertsManager.triggerSessionTermination(reason: event.description)
+            emergencyContactManager.notifyParent(event: event)
+            
+        case .medium:
+            // Medium alert: flag for therapist review and notify parent if persistent
+            systemAlertsManager.triggerCalming(reason: event.description)
+            
+            // Only notify parent if persistent
+            if sessionStartTime != nil && Date().timeIntervalSince(sessionStartTime!) > 300 {
+                emergencyContactManager.notifyParent(event: event)
+            }
+            
+        case .low:
+            // Low alert: flag for therapist review
+            systemAlertsManager.logSafetyEvent(event: event)
+            
+        case .none:
+            // No action needed
+            break
+        }
+    }
     
     func needsIntervention(_ state: IntegratedEmotionalState) -> Bool {
         // Check arousal level
