@@ -308,22 +308,22 @@ class ChildSessionViewModel: ObservableObject {
     
     // MARK: - Public Methods
     
-    func startSession() {
-        isLoading = true
-        loadingMessage = "Setting up your session..."
-        
-        // Start required services
-        startServices()
-        
-        // Create session
-        createSession()
-        
-        // Simulate loading delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.isLoading = false
-            self.showEmotionFeedback = true
-        }
-    }
+//    func startSession() {
+//        isLoading = true
+//        loadingMessage = "Setting up your session..."
+//        
+//        // Start required services
+//        startServices()
+//        
+//        // Create session
+//        createSession()
+//        
+//        // Simulate loading delay
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+//            self.isLoading = false
+//            self.showEmotionFeedback = true
+//        }
+//    }
     
     func endSession() {
         // End the session
@@ -396,8 +396,9 @@ class ChildSessionViewModel: ObservableObject {
         facialAnalysisService = LiDARFacialAnalysisService()
         biometricAnalysisService = AppleWatchBiometricService()
         
+        
         // Safety monitor needs to be created before other services that depend on it
-        safetyMonitor = SafetyMonitor()
+       
         
         // Create integration service
         if let facialService = facialAnalysisService,
@@ -406,6 +407,8 @@ class ChildSessionViewModel: ObservableObject {
                 facialAnalysisService: facialService,
                 biometricAnalysisService: biometricService
             )
+            
+            safetyMonitor = SafetyMonitor(emotionalIntegrationService: EmotionalCoherenceAnalyzer(facialAnalysisService: facialService, biometricAnalysisService: biometricService))
         }
         
         // Create intervention service
@@ -560,11 +563,109 @@ class ChildSessionViewModel: ObservableObject {
         alertMessage = "Great job! You're now moving to the \(phase.name)."
     }
     
-    private func updateCharacterAppearance(_ state: IntegratedEmotionalState) {
-        // This would update the character's appearance based on
-        // the current therapeutic response and emotional state
+//    private func updateCharacterAppearance(_ state: IntegratedEmotionalState) {
+//        // This would update the character's appearance based on
+//        // the current therapeutic response and emotional state
+//        
+//        // Mark character for update
+//        characterNeedsUpdate = true
+//    }
+}
+
+
+// Complete implementation for ChildSessionViewModel session handling
+extension ChildSessionViewModel {
+    func startSession() {
+        isLoading = true
+        loadingMessage = "Setting up your session..."
         
-        // Mark character for update
-        characterNeedsUpdate = true
+        // Initialize services
+        do {
+            // Start facial analysis
+            try facialAnalysisService?.startAnalysis()
+            
+            // Start biometric monitoring
+            try biometricAnalysisService?.startMonitoring()
+            
+            // Create a new session
+            currentSession = TherapeuticSession(phase: .connection)
+            
+            // Initialize character
+            updateCharacterConfiguration(CharacterConfiguration.default)
+            
+            // Set initial activity
+            currentActivity = currentSession?.sessionPhase.recommendedActivities.first
+            
+            // Update UI after delay to show loading state
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                self.isLoading = false
+                self.showEmotionFeedback = true
+                
+                // Start emotional integration
+                self.emotionalIntegrationService?.startIntegration(sessionId: self.currentSession?.id.uuidString)
+            }
+        } catch {
+            isLoading = false
+            showAlert = true
+            alertTitle = "Session Error"
+            alertMessage = "Could not start session: \(error.localizedDescription)"
+        }
+    }
+    
+    private func updateCharacterAppearance(_ state: IntegratedEmotionalState) {
+        // Update character based on emotional state
+        if let characterState = determineCharacterState(from: state) {
+            characterNeedsUpdate = true
+            
+            // Only perform character animation if we have an ARView
+            if let arView = arView {
+                // Find all entities in the scene
+                let entities = arView.scene.anchors.flatMap { $0.children }
+                
+                // Find the character entity (in a real app, you would have a reference to it)
+                if let characterEntity = entities.first(where: { $0 is ModelEntity }) as? ModelEntity {
+                    // Set character expression
+                    let facialExpression = CharacterAction.facialExpression(
+                        emotion: characterState.emotion,
+                        intensity: characterState.intensity
+                    )
+                    
+                    // Animate the character
+                    switch facialExpression {
+                    case .facialExpression(let emotion, let intensity):
+                        // Apply scaling based on emotion
+                        var scaleFactor: SIMD3<Float> = [1.0, 1.0, 1.0]
+                        
+                        switch emotion {
+                        case .happiness:
+                            scaleFactor = [1.0 + Float(intensity * 0.1), 1.0, 1.0]
+                        case .sadness:
+                            scaleFactor = [1.0, 1.0 - Float(intensity * 0.1), 1.0]
+                        case .anger:
+                            scaleFactor = [1.0 + Float(intensity * 0.1), 1.0 - Float(intensity * 0.05), 1.0]
+                        case .fear:
+                            scaleFactor = [1.0 - Float(intensity * 0.1), 1.0, 1.0]
+                        default:
+                            break
+                        }
+                        
+                        // Apply scale animation
+                        characterEntity.scale = scaleFactor
+                        
+                    default:
+                        break
+                    }
+                }
+            }
+        }
+    }
+    
+    private func determineCharacterState(from state: IntegratedEmotionalState) -> (emotion: EmotionType, intensity: Float)? {
+        if state.dataQuality == .poor || state.dataQuality == .invalid {
+            return nil
+        }
+        
+        // If character should mirror the child
+        return (state.dominantEmotion, state.emotionalIntensity * 0.7) // Reduce intensity slightly
     }
 }

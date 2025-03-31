@@ -188,20 +188,20 @@ class WatchBiometricMonitor {
         }
     }
     
-    private func processHeartRateSamples(_ samples: [HKSample]?) {
-        guard let samples = samples as? [HKQuantitySample], let lastSample = samples.last else { return }
-        
-        // Extract heart rate value
-        let heartRate = lastSample.quantity.doubleValue(for: HKUnit.count().unitDivided(by: .minute()))
-        
-        // Update latest value
-        latestHeartRate = heartRate
-        
-        // Notify callback
-        DispatchQueue.main.async {
-            self.heartRateUpdated?(heartRate)
-        }
-    }
+//    private func processHeartRateSamples(_ samples: [HKSample]?) {
+//        guard let samples = samples as? [HKQuantitySample], let lastSample = samples.last else { return }
+//        
+//        // Extract heart rate value
+//        let heartRate = lastSample.quantity.doubleValue(for: HKUnit.count().unitDivided(by: .minute()))
+//        
+//        // Update latest value
+//        latestHeartRate = heartRate
+//        
+//        // Notify callback
+//        DispatchQueue.main.async {
+//            self.heartRateUpdated?(heartRate)
+//        }
+//    }
     
     private func processHRVSamples(_ samples: [HKSample]?) {
         guard let samples = samples as? [HKQuantitySample], let lastSample = samples.last else { return }
@@ -229,6 +229,44 @@ class WatchBiometricMonitor {
         )
     }
 }
+
+
+// Complete implementation for Watch biometric authorization and data collection
+extension WatchBiometricMonitor {
+    func requestHealthKitAuthorization(completion: @escaping (Bool, Error?) -> Void) {
+        // Define the types of health data we want to access
+        let typesToRead: Set<HKObjectType> = [
+            HKObjectType.quantityType(forIdentifier: .heartRate)!,
+            HKObjectType.quantityType(forIdentifier: .heartRateVariabilitySDNN)!,
+            HKObjectType.quantityType(forIdentifier: .respiratoryRate)!
+        ]
+        
+        // Request authorization from HealthKit
+        healthStore.requestAuthorization(toShare: nil, read: typesToRead) { success, error in
+            DispatchQueue.main.async {
+                completion(success, error)
+            }
+        }
+    }
+    
+    func processHeartRateSamples(_ samples: [HKSample]?) {
+        guard let samples = samples as? [HKQuantitySample], let sample = samples.last else {
+            return
+        }
+        
+        // Extract heart rate value in beats per minute
+        let heartRate = sample.quantity.doubleValue(for: HKUnit.count().unitDivided(by: .minute()))
+        
+        // Update latest value
+        self.latestHeartRate = heartRate
+        
+        // Notify callback
+        DispatchQueue.main.async {
+            self.heartRateUpdated?(heartRate)
+        }
+    }
+}
+
 
 struct BiometricDataState {
     let heartRate: Double?
