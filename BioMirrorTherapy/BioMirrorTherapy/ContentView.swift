@@ -7,80 +7,124 @@
 
 import SwiftUI
 import CoreData
+import WatchConnectivity
 
 struct ContentView: View {
-    @Environment(\.managedObjectContext) private var viewContext
-
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
-        animation: .default)
-    private var items: FetchedResults<Item>
-
+    @ObservedObject var sessionViewModel = WatchSessionViewModel()
+    
     var body: some View {
         NavigationView {
             List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-                    } label: {
-                        Text(item.timestamp!, formatter: itemFormatter)
+                Section(header: Text("BioMirror Status")) {
+                    HStack {
+                        Text("Session")
+                        Spacer()
+                        Text(sessionViewModel.isSessionActive ? "Active" : "Inactive")
+                            .foregroundColor(sessionViewModel.isSessionActive ? .green : .red)
+                    }
+                    
+                    if sessionViewModel.isSessionActive {
+                        HStack {
+                            Text("Heart Rate")
+                            Spacer()
+                            Text(sessionViewModel.heartRateText)
+                        }
+                        
+                        HStack {
+                            Text("Duration")
+                            Spacer()
+                            Text(sessionViewModel.sessionDurationText)
+                        }
                     }
                 }
-                .onDelete(perform: deleteItems)
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
+                
+                Section {
+                    Button(sessionViewModel.isSessionActive ? "Stop Session" : "Start Session") {
+                        if sessionViewModel.isSessionActive {
+                            sessionViewModel.stopSession()
+                        } else {
+                            sessionViewModel.startSession()
+                        }
+                    }
+                    .foregroundColor(sessionViewModel.isSessionActive ? .red : .green)
+                    
+                    if !sessionViewModel.isStoreDataEmpty {
+                        Button("Sync Data (\(sessionViewModel.storedDataCount))") {
+                            sessionViewModel.syncData()
+                        }
+                        .foregroundColor(.blue)
                     }
                 }
             }
-            Text("Select an item")
-        }
-    }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            offsets.map { items[$0] }.forEach(viewContext.delete)
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
+            .navigationTitle("BioMirror")
         }
     }
 }
 
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
-
-#Preview {
-    ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+class WatchSessionViewModel: ObservableObject {
+    @Published var isSessionActive = false
+    @Published var heartRate: Double = 0
+    @Published var sessionDuration: TimeInterval = 0
+    @Published var storedDataCount: Int = 0
+    
+    private let sessionManager = WatchSessionManager.shared
+    private let biometricMonitor = WatchBiometricMonitor.shared
+    
+    private var timer: Timer?
+    
+    init() {
+        // Subscribe to biometric updates
+        biometricMonitor.heartRateUpdated = { [weak self] rate in
+            DispatchQueue.main.async {
+                self?.heartRate = rate
+                self?.objectWillChange.send()
+            }
+        }
+        
+        // Start timer to update UI
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            self?.updateUI()
+        }
+    }
+    
+    var heartRateText: String {
+        return String(format: "%.0f BPM", heartRate)
+    }
+    
+    var sessionDurationText: String {
+        let minutes = Int(sessionDuration) / 60
+        let seconds = Int(sessionDuration) % 60
+        return String(format: "%02d:%02d", minutes, seconds)
+    }
+    
+    var isStoreDataEmpty: Bool {
+        return storedDataCount == 0
+    }
+    
+    func startSession() {
+        sessionManager.startSession(sessionId: UUID().uuidString)
+        isSessionActive = true
+    }
+    
+    func stopSession() {
+        sessionManager.endSession()
+        isSessionActive = false
+    }
+    
+    func syncData() {
+        sessionManager.synchronizeData()
+    }
+    
+    private func updateUI() {
+        isSessionActive = sessionManager.isSessionActive
+        
+        if isSessionActive {
+            sessionDuration += 1.0
+        }
+        
+        // Update stored data count
+        storedDataCount = sessionManager.storedDataCount
+        
+        objectWillChange.send()
+    }
 }

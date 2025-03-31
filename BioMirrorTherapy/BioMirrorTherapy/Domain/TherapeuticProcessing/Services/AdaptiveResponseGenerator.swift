@@ -12,18 +12,19 @@ class AdaptiveResponseGenerator: TherapeuticResponseService {
     // MARK: - Properties
     
     private let emotionalIntegrationService: EmotionalIntegrationService
-    private let dissociationDetector: DissociationDetector
+    private let safetyMonitor: SafetyMonitor
     
     private var preferences: ResponsePreferences = .default
     private var activeSessions: [UUID: TherapeuticSession] = [:]
     
     private var titrationLevel: Float = 0.2 // How much to modify mirrored emotions
+    private var responseTimers: [UUID: Timer] = [:] // Track response timers by session ID
     
     // MARK: - Initialization
     
-    init(emotionalIntegrationService: EmotionalIntegrationService, dissociationDetector: DissociationDetector) {
+    init(emotionalIntegrationService: EmotionalIntegrationService, safetyMonitor: SafetyMonitor) {
         self.emotionalIntegrationService = emotionalIntegrationService
-        self.dissociationDetector = dissociationDetector
+        self.safetyMonitor = safetyMonitor
     }
     
     // MARK: - TherapeuticResponseService Methods
@@ -36,7 +37,13 @@ class AdaptiveResponseGenerator: TherapeuticResponseService {
     
     func endSession(_ session: TherapeuticSession) {
         session.endSession()
-        // Store session data for later analysis
+        
+        // Stop any response timers for this session
+        if let timer = responseTimers[session.id] {
+            timer.invalidate()
+            responseTimers.removeValue(forKey: session.id)
+        }
+        
         activeSessions.removeValue(forKey: session.id)
     }
     
@@ -44,9 +51,18 @@ class AdaptiveResponseGenerator: TherapeuticResponseService {
         // Update session with new state
         session.addEmotionalState(state)
         
-        // Check for dissociation first - highest priority
-        let dissociationStatus = dissociationDetector.processDissociationState(state)
-        if case .active(let severity, _, _) = dissociationStatus, severity != .potential {
+        // Check for safety concerns first
+        if safetyMonitor.needsIntervention(state) {
+            return generateSafetyResponse(for: state, in: session)
+        }
+        
+        // Check for dissociation - highest priority after safety
+        if state.dissociationIndex > 0.6 {
+            let dissociationStatus = DissociationStatus.active(
+                severity: determineDissociationSeverity(state.dissociationIndex),
+                duration: estimateDissociationDuration(for: session),
+                intensity: state.dissociationIndex
+            )
             return generateGroundingResponse(for: dissociationStatus, in: session)
         }
         
@@ -99,7 +115,7 @@ class AdaptiveResponseGenerator: TherapeuticResponseService {
         case .cognitive:
             verbal = "Let's count together. One, two, three..."
         case .naming:
-            verbal = "Can you name something you see that is [color]?"
+            verbal = "Can you name something you can see that is blue?"
         }
         
         // Create character action
@@ -149,6 +165,22 @@ class AdaptiveResponseGenerator: TherapeuticResponseService {
     
     // MARK: - Private Response Generation Methods
     
+    private func generateSafetyResponse(for state: IntegratedEmotionalState, in session: TherapeuticSession) -> TherapeuticResponse {
+        // Create a calming response for safety situations
+        return TherapeuticResponse(
+            timestamp: Date(),
+            responseType: .regulation,
+            characterEmotionalState: .neutral,
+            characterEmotionalIntensity: 0.3,
+            characterAction: .breathing(speed: 0.3, depth: 0.8),
+            verbal: "Let's take a moment to breathe together. Slow and gentle.",
+            nonverbal: "Calm, steady breathing with gentle movements",
+            interventionLevel: .intensive,
+            targetEmotionalState: .neutral,
+            duration: 20.0
+        )
+    }
+    
     private func generateConnectionResponse(for state: IntegratedEmotionalState, in session: TherapeuticSession) -> TherapeuticResponse {
         // In connection phase, focus on building rapport with gentle mirroring
         
@@ -195,9 +227,8 @@ class AdaptiveResponseGenerator: TherapeuticResponseService {
         let emotion = state.dominantEmotion
         let intensity = state.emotionalIntensity
         
-        // Verbal response focused on naming the emotion
-        let verbal = "I notice you might be feeling \(emotion.rawValue.lowercased()). " +
-                    "I sometimes feel that way too."
+        // Create verbal response for emotion awareness
+        let verbal = generateVerbalAwarenessResponse(for: emotion, intensity: intensity)
         
         // Create character action
         let action = CharacterAction.facialExpression(
@@ -381,6 +412,30 @@ class AdaptiveResponseGenerator: TherapeuticResponseService {
         }
     }
     
+    private func generateVerbalAwarenessResponse(for emotion: EmotionType, intensity: Float) -> String {
+        // Generate verbal response for awareness phase
+        let intensityWord = intensity > 0.7 ? "very " : (intensity > 0.4 ? "" : "a little ")
+        
+        switch emotion {
+        case .happiness:
+            return "I notice you're feeling \(intensityWord)happy. I can see it in your smile!"
+        case .sadness:
+            return "I see that you might be feeling \(intensityWord)sad. I can tell from your expression."
+        case .anger:
+            return "It looks like you're feeling \(intensityWord)frustrated or angry. I can see it in your eyebrows."
+        case .fear:
+            return "I notice you might be feeling \(intensityWord)worried or scared. I can see it in your eyes."
+        case .surprise:
+            return "You look \(intensityWord)surprised! I can tell from your wide eyes."
+        case .disgust:
+            return "It seems like you're feeling \(intensityWord)uncomfortable with something. I can see it in your expression."
+        case .neutral:
+            return "You're looking calm right now. How are you feeling inside?"
+        default:
+            return "I'm noticing your feelings. Can you tell me about them?"
+        }
+    }
+    
     private func selectGroundingTechnique(for severity: DissociationSeverity, intensity: Float) -> GroundingTechnique {
         // First check user preferences
         let availableTechniques = preferences.preferredGroundingTechniques
@@ -516,5 +571,34 @@ class AdaptiveResponseGenerator: TherapeuticResponseService {
             targetEmotionalState: .neutral,
             duration: 10.0
         )
+    }
+    
+    private func determineDissociationSeverity(_ index: Float) -> DissociationSeverity {
+        if index > 0.8 {
+            return .severe
+        } else if index > 0.6 {
+            return .moderate
+        } else {
+            return .mild
+        }
+    }
+    
+    private func estimateDissociationDuration(for session: TherapeuticSession) -> TimeInterval {
+        // Get recent emotional states
+        let recentStates = session.emotionalStates.suffix(10)
+        
+        // Count how many consecutive states have high dissociation index
+        var consecutiveCount = 0
+        for state in recentStates.reversed() {
+            if state.dissociationIndex > 0.5 {
+                consecutiveCount += 1
+            } else {
+                break
+            }
+        }
+        
+        // Estimate duration based on consecutive states
+        // Assuming states are collected at roughly 5Hz (0.2 seconds apart)
+        return TimeInterval(consecutiveCount) * 0.2
     }
 }

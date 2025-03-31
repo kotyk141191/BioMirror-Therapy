@@ -21,12 +21,14 @@ class EmotionalCoherenceAnalyzer: EmotionalIntegrationService {
     private var latestPhysiologicalState: PhysiologicalState?
     
     private let integratedStateSubject = PassthroughSubject<IntegratedEmotionalState, Never>()
+    private let stateChangeSubject = PassthroughSubject<EmotionalStateChange, Never>()
     private var _currentIntegratedState: IntegratedEmotionalState?
     
     private var integrationTimer: Timer?
     private let integrationInterval: TimeInterval = 0.2 // 5Hz integration rate
     
     private var isRunning = false
+    private var previousIntegratedState: IntegratedEmotionalState?
     
     // MARK: - EmotionalIntegrationService Protocol
     
@@ -36,6 +38,10 @@ class EmotionalCoherenceAnalyzer: EmotionalIntegrationService {
     
     var integratedStatePublisher: AnyPublisher<IntegratedEmotionalState, Never> {
         return integratedStateSubject.eraseToAnyPublisher()
+    }
+    
+    var stateChangePublisher: AnyPublisher<EmotionalStateChange, Never> {
+        return stateChangeSubject.eraseToAnyPublisher()
     }
     
     // MARK: - Initialization
@@ -68,18 +74,26 @@ class EmotionalCoherenceAnalyzer: EmotionalIntegrationService {
         isRunning = true
     }
     
+    func startIntegration(sessionId: String?) {
+        startIntegration()
+    }
+    
     func stopIntegration() {
         guard isRunning else { return }
         
         // Cancel subscriptions
         emotionalStateSubscription?.cancel()
+        emotionalStateSubscription = nil
+        
         physiologicalStateSubscription?.cancel()
+        physiologicalStateSubscription = nil
         
         // Stop integration timer
         integrationTimer?.invalidate()
         integrationTimer = nil
         
         isRunning = false
+        previousIntegratedState = nil
     }
     
     func detectDissociation(in state: IntegratedEmotionalState) -> Bool {
@@ -95,20 +109,35 @@ class EmotionalCoherenceAnalyzer: EmotionalIntegrationService {
     private func setupIntegrationTimer() {
         integrationTimer?.invalidate()
         
-        // Create timer that integrates emotional and physiological data
+        // Create timer to integrate emotional and physiological data
         integrationTimer = Timer.scheduledTimer(withTimeInterval: integrationInterval, repeats: true) { [weak self] _ in
-            guard let self = self,
-                  let emotionalState = self.latestEmotionalState,
-                  let physiologicalState = self.latestPhysiologicalState else { return }
-            
-            // Integrate data and calculate metrics
-            let integratedState = self.integrateData(
-                emotionalState: emotionalState,
-                physiologicalState: physiologicalState
-            )
-            
-            self._currentIntegratedState = integratedState
-            self.integratedStateSubject.send(integratedState)
+            self?.processLatestData()
+        }
+    }
+    
+    private func processLatestData() {
+        guard let emotionalState = latestEmotionalState,
+              let physiologicalState = latestPhysiologicalState else { return }
+        
+        // Integrate data and calculate metrics
+        let integratedState = integrateData(
+            emotionalState: emotionalState,
+            physiologicalState: physiologicalState
+        )
+        
+        // Detect significant changes
+        let stateChange = detectStateChanges(from: previousIntegratedState, to: integratedState)
+        
+        // Update state
+        _currentIntegratedState = integratedState
+        previousIntegratedState = integratedState
+        
+        // Notify subscribers
+        integratedStateSubject.send(integratedState)
+        
+        // Notify about significant changes
+        if stateChange.isSignificant {
+            stateChangeSubject.send(stateChange)
         }
     }
     
@@ -149,62 +178,130 @@ class EmotionalCoherenceAnalyzer: EmotionalIntegrationService {
         )
     }
     
-    private func calculateCoherenceIndex(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> Float {
-        // This is a simplified placeholder implementation
-        // In a real app, this would use more sophisticated algorithms to correlate
-        // facial expressions with physiological arousal
+    func calculateCoherenceIndex(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> Float {
+        // Get expected arousal range for the emotion
+        let (minArousal, maxArousal) = expectedArousalRange(for: emotionalState.primaryEmotion)
         
-        // For common emotions, check if physiological state matches expected pattern
-        let facialEmotion = emotionalState.primaryEmotion
-        let arousal = physiologicalState.arousalLevel
+        // Actual arousal
+        let actualArousal = physiologicalState.arousalLevel
         
-        // Check if arousal level matches expected pattern for the emotion
-        var coherence: Float = 0.5 // Neutral starting point
+        // Base coherence score
+        var coherence: Float = 0.5
         
-        switch facialEmotion {
-        case .happiness, .anger, .surprise:
-            // High arousal emotions - higher coherence when arousal is high
-            coherence = min(1.0, 0.5 + Float(arousal))
+        // If arousal is within expected range, increase coherence
+        if actualArousal >= minArousal && actualArousal <= maxArousal {
+            // Higher coherence when closer to the middle of the expected range
+            let rangeCenter = (minArousal + maxArousal) / 2
+            let distanceFromCenter = abs(actualArousal - rangeCenter)
+            let rangeWidth = maxArousal - minArousal
             
-        case .sadness, .disgust:
-            // Mixed arousal emotions - moderate coherence is best
-            coherence = 1.0 - abs(Float(arousal) - 0.5) * 2
-            
-        case .fear:
-            // High arousal emotion, but can also include freeze response
-            if physiologicalState.motionMetrics.freezeIndex > 0.6 {
-                // Fear with freeze - high coherence
-                coherence = 0.8 + min(0.2, Float(arousal) * 0.2)
-            } else {
-                // Fear with fight/flight - high coherence with high arousal
-                coherence = min(1.0, 0.4 + Float(arousal) * 0.6)
-            }
-            
-        case .neutral:
-            // Neutral should have low arousal for high coherence
-            coherence = 1.0 - min(1.0, Float(arousal) * 2)
-            
-        default:
-            // Other emotions - use moderate coherence
-            coherence = 0.5
+            // Transform to 0-1 scale with higher values for better match
+            coherence = 1.0 - (distanceFromCenter / (rangeWidth / 2))
+        } else {
+            // Lower coherence when outside expected range
+            // How far outside the range?
+            let distanceOutside = min(abs(actualArousal - minArousal), abs(actualArousal - maxArousal))
+            coherence = max(0.1, 0.5 - distanceOutside)
         }
         
-        // Factor in confidence of facial expression detection
+        // Check for physiological signs matching the emotion
+        coherence = adjustCoherenceForPhysiologicalSigns(
+            coherence: coherence,
+            emotion: emotionalState.primaryEmotion,
+            physiologicalState: physiologicalState
+        )
+        
+        // Weight by confidence in emotional state detection
         coherence *= emotionalState.confidence
         
-        // Factor in quality of physiological data
-        coherence *= physiologicalState.qualityIndex
+        // Weight by physiological data quality
+        coherence *= min(1.0, physiologicalState.qualityIndex * 1.2)
         
-        return coherence
+        return min(1.0, coherence)
+    }
+    
+    private func adjustCoherenceForPhysiologicalSigns(coherence: Float, emotion: EmotionType, physiologicalState: PhysiologicalState) -> Float {
+        var adjustedCoherence = coherence
+        
+        // Check specific physiological patterns for emotions
+        switch emotion {
+        case .fear:
+            // Fear often shows increased heart rate and potential freeze response
+            let heartRateElevated = physiologicalState.hrvMetrics.heartRate > 90
+            let freezeResponse = physiologicalState.motionMetrics.freezeIndex > 0.6
+            
+            if heartRateElevated || freezeResponse {
+                adjustedCoherence += 0.15
+            }
+            
+        case .anger:
+            // Anger typically shows high heart rate and reduced HRV
+            let heartRateElevated = physiologicalState.hrvMetrics.heartRate > 90
+            let hrvReduced = physiologicalState.hrvMetrics.heartRateVariability < 40
+            
+            if heartRateElevated && hrvReduced {
+                adjustedCoherence += 0.2
+            }
+            
+        case .happiness:
+            // Happiness often shows moderate heart rate and good HRV
+            let heartRateModerate = physiologicalState.hrvMetrics.heartRate > 65 &&
+                                    physiologicalState.hrvMetrics.heartRate < 90
+            let hrvModerate = physiologicalState.hrvMetrics.heartRateVariability > 50
+            
+            if heartRateModerate && hrvModerate {
+                adjustedCoherence += 0.15
+            }
+            
+        case .sadness:
+            // Sadness may show reduced movement and slight respiratory changes
+            let lowMovement = physiologicalState.motionMetrics.acceleration.x < 0.1 &&
+                             physiologicalState.motionMetrics.acceleration.y < 0.1
+            let respirationChanged = physiologicalState.respirationMetrics.irregularity > 0.4
+            
+            if lowMovement && respirationChanged {
+                adjustedCoherence += 0.1
+            }
+            
+        default:
+            break
+        }
+        
+        return adjustedCoherence
+    }
+    
+    private func expectedArousalRange(for emotion: EmotionType) -> (Float, Float) {
+        switch emotion {
+        case .happiness:
+            return (0.4, 0.8) // Moderate to high arousal
+        case .sadness:
+            return (0.1, 0.4) // Low to moderate arousal
+        case .anger:
+            return (0.7, 1.0) // High arousal
+        case .fear:
+            return (0.6, 0.9) // High arousal
+        case .surprise:
+            return (0.5, 0.9) // Moderate to high arousal
+        case .disgust:
+            return (0.3, 0.7) // Moderate arousal
+        case .neutral:
+            return (0.2, 0.5) // Low to moderate arousal
+        case .contempt:
+            return (0.3, 0.6) // Moderate arousal
+        case .dissociation:
+            return (0.1, 0.3) // Low arousal
+        default:
+            return (0.3, 0.7) // Default range
+        }
     }
     
     private func calculateEmotionalMaskingIndex(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> Float {
-        // Emotional masking occurs when the face appears neutral but physiology shows activation
-        // or when facial emotion doesn't match physiological state
+        // Base masking score
+        var masking: Float = 0.0
         
         // Check if face is neutral but arousal is high
         if emotionalState.primaryEmotion == .neutral && physiologicalState.arousalLevel > 0.6 {
-            return min(1.0, physiologicalState.arousalLevel * 1.5)
+            masking = min(1.0, physiologicalState.arousalLevel * 1.5)
         }
         
         // Check if face shows positive emotion but physiology suggests otherwise
@@ -213,15 +310,25 @@ class EmotionalCoherenceAnalyzer: EmotionalIntegrationService {
             // If HRV is low but face shows happiness, might be masking
             let hrvNormalized = Float(physiologicalState.hrvMetrics.heartRateVariability / 100.0) // Normalize to 0-1 range
             if hrvNormalized < 0.3 && physiologicalState.arousalLevel > 0.7 {
-                return 0.8
+                masking = max(masking, 0.8)
+            }
+        }
+        
+        // Check for mismatch between primary and secondary emotions
+        if let secondaryEmotion = emotionalState.secondaryEmotions.max(by: { $0.value < $1.value })?.key,
+           let secondaryIntensity = emotionalState.secondaryEmotions[secondaryEmotion] {
+            
+            if secondaryIntensity > emotionalState.primaryIntensity * 0.8 {
+                // Secondary emotion is almost as strong as primary
+                masking = max(masking, 0.4)
             }
         }
         
         // Calculate general mismatch between facial and physiological indicators
         let coherence = calculateCoherenceIndex(emotionalState: emotionalState, physiologicalState: physiologicalState)
-        let masking = 1.0 - coherence
+        masking = max(masking, 1.0 - coherence)
         
-        return masking
+        return min(1.0, masking)
     }
     
     private func calculateDissociationIndex(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> Float {
@@ -249,13 +356,17 @@ class EmotionalCoherenceAnalyzer: EmotionalIntegrationService {
             dissociationScore += 0.3
         }
         
+        // Check for lack of micro-expressions
+        if emotionalState.microExpressions.isEmpty && emotionalState.confidence > 0.7 {
+            dissociationScore += 0.2
+        }
+        
         // Factor in coherence (low coherence can indicate dissociation)
         let coherence = calculateCoherenceIndex(emotionalState: emotionalState, physiologicalState: physiologicalState)
         if coherence < 0.3 {
             dissociationScore += 0.3 * (1.0 - coherence)
         }
         
-        // Cap at 1.0
         return min(1.0, dissociationScore)
     }
     
@@ -366,4 +477,60 @@ class EmotionalCoherenceAnalyzer: EmotionalIntegrationService {
         
         return .fair
     }
+    
+    private func detectStateChanges(from previousState: IntegratedEmotionalState?, to currentState: IntegratedEmotionalState) -> EmotionalStateChange {
+        guard let previous = previousState else {
+            // First state, treat as significant by default
+            return EmotionalStateChange(
+                from: currentState, // No previous state, use current as placeholder
+                to: currentState,
+                emotionChanged: true,
+                intensityChanged: true,
+                arousalChanged: true,
+                coherenceChanged: true,
+                dissociationChanged: true,
+                regulationChanged: true,
+                isSignificant: true
+            )
+        }
+        
+        // Check for significant changes
+        let emotionChanged = previous.dominantEmotion != currentState.dominantEmotion
+        let intensityChanged = abs(previous.emotionalIntensity - currentState.emotionalIntensity) > 0.25
+        let arousalChanged = abs(previous.arousalLevel - currentState.arousalLevel) > 0.2
+        let coherenceChanged = abs(previous.coherenceIndex - currentState.coherenceIndex) > 0.2
+        let dissociationChanged = abs(previous.dissociationIndex - currentState.dissociationIndex) > 0.2
+        let regulationChanged = previous.emotionalRegulation != currentState.emotionalRegulation
+        
+        // Determine if change is significant enough to trigger response
+        let isSignificant = emotionChanged ||
+                           intensityChanged ||
+                           regulationChanged ||
+                           (dissociationChanged && currentState.dissociationIndex > 0.5) ||
+                           (arousalChanged && currentState.arousalLevel > 0.7)
+        
+        return EmotionalStateChange(
+            from: previous,
+            to: currentState,
+            emotionChanged: emotionChanged,
+            intensityChanged: intensityChanged,
+            arousalChanged: arousalChanged,
+            coherenceChanged: coherenceChanged,
+            dissociationChanged: dissociationChanged,
+            regulationChanged: regulationChanged,
+            isSignificant: isSignificant
+        )
+    }
+}
+
+struct EmotionalStateChange {
+    let from: IntegratedEmotionalState
+    let to: IntegratedEmotionalState
+    let emotionChanged: Bool
+    let intensityChanged: Bool
+    let arousalChanged: Bool
+    let coherenceChanged: Bool
+    let dissociationChanged: Bool
+    let regulationChanged: Bool
+    let isSignificant: Bool
 }

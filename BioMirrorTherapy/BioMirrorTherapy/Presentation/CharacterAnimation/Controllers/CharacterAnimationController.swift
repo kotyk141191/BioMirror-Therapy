@@ -19,62 +19,39 @@ class CharacterAnimationController {
     
     private var characterConfiguration: CharacterConfiguration
     
+    
+    // Character components
+    private var headEntity: ModelEntity?
+    private var faceEntity: ModelEntity?
+    private var bodyEntity: ModelEntity?
+    
+    // Animation state
+    private var currentAnimationType: CharacterAnimationType = .idle
+    private var currentEmotion: EmotionType = .neutral
+    private var currentIntensity: Float = 0.0
+    private var isBreathing = false
+    private var isSpeaking = false
+    
+    // Animation subscribers
+    private var cancellables = Set<AnyCancellable>()
+    
+    // Animation timing
+    private var blendDuration: TimeInterval = 0.3
     // MARK: - Initialization
     
     init(arView: ARView, configuration: CharacterConfiguration = .default) {
         self.arView = arView
         self.characterConfiguration = configuration
+        
         setupAREnvironment()
+        loadCharacterModel()
     }
     
     // MARK: - Public Methods
     
     /// Load character with the specified configuration
     /// - Parameter completion: Called when character is loaded
-    func loadCharacter(completion: @escaping (Bool) -> Void) {
-        // Remove existing character if any
-        characterEntity?.removeFromParent()
-        
-        // Create a new character entity
-        let entity = CharacterEntity(configuration: characterConfiguration)
-        
-        // Create anchor 0.5 meters in front of camera
-        let anchor = AnchorEntity(world: [0, -0.1, -0.5])
-        anchor.addChild(entity)
-        
-        // Add to scene
-        arView.scene.addAnchor(anchor)
-        characterEntity = entity
-        
-        // Set initial idle state
-        entity.playAnimation(.idle)
-        
-        completion(true)
-    }
     
-    /// Express an emotion on the character
-    /// - Parameters:
-    ///   - emotion: Emotion to express
-    ///   - intensity: Intensity of the emotion (0.0-1.0)
-    ///   - duration: Duration of the expression
-    ///   - completion: Called when animation is complete
-    func expressEmotion(_ emotion: EmotionType, intensity: Float, duration: TimeInterval, completion: (() -> Void)? = nil) {
-        guard let entity = characterEntity else { return }
-        
-        // Map emotion to character animation
-        let animation = mapEmotionToAnimation(emotion, intensity: intensity)
-        
-        // Play emotion animation
-        entity.playAnimation(animation)
-        
-        // Schedule return to idle after duration
-        if duration > 0 {
-            DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
-                entity.playAnimation(.idle)
-                completion?()
-            }
-        }
-    }
     
     /// Perform a character action
     /// - Parameters:
@@ -228,4 +205,524 @@ class CharacterAnimationController {
             SoundManager.shared.playSound(at: soundURL)
         }
     }
+    
+    
+    
+    // MARK: - Public Methods
+    
+    /// Load character with the specified configuration
+    /// - Parameter completion: Called when character is loaded
+    func loadCharacter(completion: @escaping (Bool) -> Void) {
+        // Remove existing character if any
+        characterEntity?.removeFromParent()
+        
+        // Load the character model based on configuration
+        loadCharacterModel()
+        
+        // Set initial idle state
+        playAnimation(.idle)
+        
+        completion(true)
+    }
+    
+    /// Express an emotion on the character
+    /// - Parameters:
+    ///   - emotion: Emotion to express
+    ///   - intensity: Intensity of the emotion (0.0-1.0)
+    ///   - duration: Duration of the expression
+    ///   - completion: Called when animation is complete
+    func expressEmotion(_ emotion: EmotionType, intensity: Float, duration: TimeInterval, completion: (() -> Void)? = nil) {
+        // Save current emotion state
+        currentEmotion = emotion
+        currentIntensity = intensity
+        
+        // Map emotion to character animation
+        let animation = mapEmotionToAnimation(emotion, intensity: intensity)
+        
+        // Apply facial blend shapes for the emotion
+        updateFacialBlendShapes(for: emotion, intensity: intensity)
+        
+        // Play emotion animation
+        playAnimation(animation)
+        
+        // Adjust body posture for emotion
+        adjustBodyPosture(for: emotion, intensity: intensity)
+        
+        // Schedule return to idle after duration if specified
+        if duration > 0 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak self] in
+                guard let self = self else { return }
+                
+                // Transition back to idle
+                self.playAnimation(.idle)
+                self.updateFacialBlendShapes(for: .neutral, intensity: 0.3)
+                self.adjustBodyPosture(for: .neutral, intensity: 0.3)
+                
+                // Reset current emotion
+                self.currentEmotion = .neutral
+                self.currentIntensity = 0.3
+                
+                completion?()
+            }
+        } else if let completion = completion {
+            // Call completion immediately if no duration
+            completion()
+        }
+    }
+    
+    /// Perform a character action
+    /// - Parameters:
+    ///   - action: Action to perform
+    ///   - completion: Called when animation is complete
+    func performAction(_ action: CharacterAction, completion: (() -> Void)? = nil) {
+        switch action {
+        case .breathing(let speed, let depth):
+            animateBreathing(speed: speed, depth: depth)
+            completion?()
+            
+        case .facialExpression(let emotion, let intensity):
+            expressEmotion(emotion, intensity: intensity, duration: 0, completion: completion)
+            
+        case .bodyMovement(let type, let intensity):
+            performBodyMovement(type: type, intensity: intensity, completion: completion)
+            
+        case .vocalization(let type):
+            playVocalization(type, completion: completion)
+            
+        case .attention(let focus):
+            setAttentionFocus(focus, completion: completion)
+        }
+    }
+    
+    /// Update character configuration
+    /// - Parameter configuration: New configuration
+    func updateConfiguration(_ configuration: CharacterConfiguration) {
+        self.characterConfiguration = configuration
+        
+        // Apply configuration changes to character appearance
+        updateCharacterAppearance()
+    }
+    
+    /// Implement a therapeutic response with the character
+    /// - Parameter response: Therapeutic response to implement
+    func implementTherapeuticResponse(_ response: TherapeuticResponse) {
+        // Set character's emotional state
+        expressEmotion(
+            response.characterEmotionalState,
+            intensity: response.characterEmotionalIntensity,
+            duration: 0
+        )
+        
+        // Perform character action if specified
+        if let action = response.characterAction {
+            performAction(action)
+        }
+        
+        // Speak verbalization if provided
+        if let verbal = response.verbal {
+            speak(verbal)
+        }
+    }
+    
+    /// Have the character speak text
+    /// - Parameter text: Text to speak
+    func speak(_ text: String) {
+        // Animate speaking
+        animateSpeaking(text: text)
+        
+        // Use speech synthesis to speak the text
+        let speechSynthesizer = SpeechSynthesizer.shared
+        speechSynthesizer.speak(text, voice: characterConfiguration.voiceType)
+    }
+    
+    // MARK: - Private Methods
+    
+    private func setupAREnvironment() {
+        // Configure AR session
+        let configuration = ARWorldTrackingConfiguration()
+        configuration.planeDetection = [.horizontal]
+        configuration.environmentTexturing = .automatic
+        
+        // Run the session
+        arView.session.run(configuration)
+        
+        // Add coaching overlay if needed
+        if ARWorldTrackingConfiguration.isSupported {
+            let coachingOverlay = ARCoachingOverlayView()
+            coachingOverlay.session = arView.session
+            coachingOverlay.goal = .horizontalPlane
+            coachingOverlay.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            arView.addSubview(coachingOverlay)
+        }
+    }
+    
+    private func loadCharacterModel() {
+        // In a real application, this would load a 3D character model from a USDZ file
+        // or create it from primitives. For this example, we'll create a simple character.
+        
+        // Create a root entity for the character
+        let character = Entity()
+        
+        // Create body
+        let bodyMesh = MeshResource.generateBox(size: 0.2)
+        let bodyMaterial = SimpleMaterial(color: characterConfiguration.primaryColor, roughness: 0.5, isMetallic: false)
+        let body = ModelEntity(mesh: bodyMesh, materials: [bodyMaterial])
+        body.position = [0, -0.1, 0]
+        character.addChild(body)
+        bodyEntity = body
+        
+        // Create head
+        let headMesh = MeshResource.generateSphere(radius: 0.1)
+        let headMaterial = SimpleMaterial(color: characterConfiguration.secondaryColor, roughness: 0.3, isMetallic: false)
+        let head = ModelEntity(mesh: headMesh, materials: [headMaterial])
+        head.position = [0, 0.15, 0]
+        character.addChild(head)
+        headEntity = head
+        
+        // Create face
+        let faceMesh = MeshResource.generatePlane(width: 0.1, height: 0.1)
+        let faceMaterial = SimpleMaterial(color: .white, roughness: 0.1, isMetallic: false)
+        let face = ModelEntity(mesh: faceMesh, materials: [faceMaterial])
+        face.position = [0, 0, 0.051] // Slightly in front of head sphere
+        head.addChild(face)
+        faceEntity = face
+        
+        // Add to scene with anchor
+        let anchor = AnchorEntity(world: [0, 0, -0.5])
+        anchor.addChild(character)
+        arView.scene.addAnchor(anchor)
+        
+        characterEntity = character
+        
+        // Start idle animation
+        playAnimation(.idle)
+    }
+    
+    private func updateCharacterAppearance() {
+        // Update character materials based on configuration
+        if let bodyEntity = bodyEntity {
+            bodyEntity.model?.materials = [
+                SimpleMaterial(color: characterConfiguration.primaryColor, roughness: 0.5, isMetallic: false)
+            ]
+        }
+        
+        if let headEntity = headEntity {
+            headEntity.model?.materials = [
+                SimpleMaterial(color: characterConfiguration.secondaryColor, roughness: 0.3, isMetallic: false)
+            ]
+        }
+        
+        // Add accessories if specified in configuration
+        // (In a real app, this would load 3D models for accessories)
+    }
+    
+    
+    private func playAnimation(_ animationType: CharacterAnimationType) {
+        // Stop any current animations first
+        stopAllAnimations()
+        
+        currentAnimationType = animationType
+        
+        // Create and play appropriate animation
+        switch animationType {
+        case .idle:
+            playIdleAnimation()
+        case .happy, .happyIntense:
+            playEmotionAnimation(scale: [1.05, 1.05, 1.05], positionOffset: [0, 0.02, 0])
+        case .sad, .sadIntense:
+            playEmotionAnimation(scale: [0.95, 0.95, 0.95], positionOffset: [0, -0.02, 0])
+        case .angry, .angryIntense:
+            playEmotionAnimation(scale: [1.05, 0.95, 1.05], positionOffset: [0, 0, 0.02])
+        case .fear, .fearIntense:
+            playEmotionAnimation(scale: [0.9, 0.9, 0.9], positionOffset: [0, -0.01, -0.01])
+        default:
+            playEmotionAnimation(scale: [1.0, 1.0, 1.0], positionOffset: [0, 0, 0])
+        }
+    }
+    
+    private func playIdleAnimation() {
+        guard let characterEntity = characterEntity else { return }
+        
+        // Create subtle idle animation
+        let duration: Double = 3.0
+        
+        // Subtle up and down movement
+        let originalPosition = characterEntity.position
+        let upPosition = SIMD3<Float>(
+            x: originalPosition.x,
+            y: originalPosition.y + 0.005,
+            z: originalPosition.z
+        )
+        
+        // Animate position
+        let animation = Transform(
+            scale: characterEntity.scale,
+            rotation: characterEntity.orientation,
+            translation: upPosition
+        )
+        
+        characterEntity.move(
+            to: animation,
+            relativeTo: characterEntity.parent,
+            duration: duration / 2,
+            timingFunction: .easeInOut
+        )
+        
+        // Return to original position
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration / 2) { [weak self] in
+            guard let self = self, self.currentAnimationType == .idle else { return }
+            
+            characterEntity.move(
+                to: Transform(
+                    scale: characterEntity.scale,
+                    rotation: characterEntity.orientation,
+                    translation: originalPosition
+                ),
+                relativeTo: characterEntity.parent,
+                duration: duration / 2,
+                timingFunction: .easeInOut
+            )
+            
+            // Loop the animation
+            DispatchQueue.main.asyncAfter(deadline: .now() + duration / 2) { [weak self] in
+                guard let self = self, self.currentAnimationType == .idle else { return }
+                self.playIdleAnimation()
+            }
+        }
+    }
+    
+    private func playEmotionAnimation(scale: SIMD3<Float>, positionOffset: SIMD3<Float>) {
+        guard let characterEntity = characterEntity,
+              let originalPosition = characterEntity.parent?.convert(position: .zero, to: nil) else { return }
+        
+        // Apply scale and position changes
+        let targetPosition = SIMD3<Float>(
+            x: originalPosition.x + positionOffset.x,
+            y: originalPosition.y + positionOffset.y,
+            z: originalPosition.z + positionOffset.z
+        )
+        
+        let animation = Transform(
+            scale: scale,
+            rotation: characterEntity.orientation,
+            translation: targetPosition
+        )
+        
+        // Animate to target transform
+        characterEntity.move(
+            to: animation,
+            relativeTo: nil,
+            duration: blendDuration,
+            timingFunction: .easeInOut
+        )
+    }
+    
+    private func updateFacialBlendShapes(for emotion: EmotionType, intensity: Float) {
+        // In a real implementation with ARKit-driven face rig,
+        // this would set blend shape values on the character's face model
+        
+        // Since we're using a simplified character, we'll just update the face entity's properties
+        guard let faceEntity = faceEntity else { return }
+        
+        // Reset all blend shapes
+        // (In a real app, this would set all blend shapes to 0)
+        
+        // Apply emotion-specific blend shapes
+        switch emotion {
+        case .happiness:
+            // Simulate smile by scaling face horizontally
+            faceEntity.scale = [1.0 + (0.2 * intensity), 1.0 - (0.1 * intensity), 1.0]
+            
+        case .sadness:
+            // Simulate frown by scaling face vertically
+            faceEntity.scale = [1.0, 1.0 - (0.2 * intensity), 1.0]
+            
+        case .anger:
+            // Simulate anger by scaling face
+            faceEntity.scale = [1.0 + (0.1 * intensity), 1.0 - (0.15 * intensity), 1.0]
+            
+        case .fear:
+            // Simulate fear by scaling face
+            faceEntity.scale = [1.0 - (0.1 * intensity), 1.0 + (0.1 * intensity), 1.0]
+            
+        case .surprise:
+            // Simulate surprise by scaling face
+            faceEntity.scale = [1.0 + (0.1 * intensity), 1.0 + (0.2 * intensity), 1.0]
+            
+        case .neutral:
+            // Reset to neutral
+            faceEntity.scale = [1.0, 1.0, 1.0]
+            
+        default:
+            // Default to neutral
+            faceEntity.scale = [1.0, 1.0, 1.0]
+        }
+    }
+    
+    private func adjustBodyPosture(for emotion: EmotionType, intensity: Float) {
+        guard let bodyEntity = bodyEntity else { return }
+        
+        // Apply appropriate body posture for emotion
+        switch emotion {
+        case .happiness:
+            // Upright, slightly expanded posture for happiness
+            bodyEntity.scale = [1.0 + (0.1 * intensity), 1.0 + (0.1 * intensity), 1.0]
+            
+        case .sadness:
+            // Slumped, contracted posture for sadness
+            bodyEntity.scale = [1.0, 1.0 - (0.1 * intensity), 1.0]
+            
+        case .anger:
+            // Tense, expanded posture for anger
+            bodyEntity.scale = [1.0 + (0.15 * intensity), 1.0 - (0.05 * intensity), 1.0 + (0.1 * intensity)]
+            
+        case .fear:
+            // Contracted, protective posture for fear
+            bodyEntity.scale = [1.0 - (0.1 * intensity), 1.0 - (0.1 * intensity), 1.0 - (0.05 * intensity)]
+            
+        case .neutral:
+            // Reset to neutral
+            bodyEntity.scale = [1.0, 1.0, 1.0]
+            
+        default:
+            // Default neutral posture
+            bodyEntity.scale = [1.0, 1.0, 1.0]
+        }
+    }
+    
+    private func animateBreathing(speed: Float, depth: Float) {
+        guard let bodyEntity = bodyEntity else { return }
+        
+        // Stop any current breathing animation
+        if isBreathing {
+            // Reset breathing animation
+            bodyEntity.stopAllAnimations()
+        }
+        
+        isBreathing = true
+        
+        // Convert speed to duration (0.5 = fast, 4.0 = slow)
+        let duration = 4.0 - (Double(speed) * 3.5)
+        
+        // Create breathing animation
+        // Inhale - expand chest
+        let originalScale = bodyEntity.scale
+        let inhaleScale = SIMD3<Float>(
+            x: originalScale.x * (1.0 + (depth * 0.1)),
+            y: originalScale.y,
+            z: originalScale.z * (1.0 + (depth * 0.1))
+        )
+        
+        // Animate inhale
+        let inhaleAnimation = Transform(
+            scale: inhaleScale,
+            rotation: bodyEntity.orientation,
+            translation: bodyEntity.position
+        )
+        
+        // Start breathing cycle
+        animateBreathingCycle(entity: bodyEntity,
+                              originalScale: originalScale,
+                              targetScale: inhaleScale,
+                              duration: duration)
+    }
+    
+    private func animateBreathingCycle(entity: ModelEntity,
+                                       originalScale: SIMD3<Float>,
+                                       targetScale: SIMD3<Float>,
+                                       duration: Double,
+                                       isInhale: Bool = true) {
+        // Stop if no longer breathing
+        guard isBreathing else { return }
+        
+        // Determine target scale for this phase
+        let targetTransform = Transform(
+            scale: isInhale ? targetScale : originalScale,
+            rotation: entity.orientation,
+            translation: entity.position
+        )
+        
+        // Animate to target
+        entity.move(
+            to: targetTransform,
+            relativeTo: entity.parent,
+            duration: duration / 2,
+            timingFunction: .easeInOut
+        )
+        
+        // Schedule next phase
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration / 2) { [weak self] in
+            guard let self = self, self.isBreathing else { return }
+            
+            // Continue cycle with opposite phase
+            self.animateBreathingCycle(
+                entity: entity,
+                originalScale: originalScale,
+                targetScale: targetScale,
+                duration: duration,
+                isInhale: !isInhale
+            )
+        }
+    }
+    
+    private func animateSpeaking(text: String) {
+        guard let faceEntity = faceEntity else { return }
+        
+        // Stop any current speaking animation
+        if isSpeaking {
+            faceEntity.stopAllAnimations()
+        }
+        
+        isSpeaking = true
+        
+        // Estimate duration based on text length
+        let wordCount = text.split(separator: " ").count
+        let duration = max(1.0, Double(wordCount) * 0.3) // Approx 0.3 seconds per word
+        
+        // Create speaking animation sequence
+        let mouthMovementCount = Int(duration * 4) // 4 movements per second
+        
+        // Start mouth movement sequence
+        animateMouthMovement(entity: faceEntity,
+                             movementIndex: 0,
+                             totalMovements: mouthMovementCount,
+                             duration: duration / Double(mouthMovementCount))
+        
+        // Reset flag after animation completes
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak self] in
+            self?.isSpeaking = false
+        }
+    }
+    
+    private func animateMouthMovement(entity: ModelEntity,
+                                      movementIndex: Int,
+                                      totalMovements: Int,
+                                      duration: Double) {
+        // Stop if no longer speaking
+        guard isSpeaking else { return }
+        
+        // Original scale
+        let originalScale = entity.scale
+        
+        // Open mouth
+        let openAmount = Float.random(in: 0.01...0.05)
+        let mouthOpenScale = SIMD3<Float>(
+            x: originalScale.x,
+            y: originalScale.y * (1.0 + openAmount),
+            z: originalScale.z
+        )
+        
+        // Animate mouth opening
+        entity.move(
+            to: Transform(
+                scale: mouthOpenScale,
+                rotation: entity.orientation,
+                translation: entity.position
+            ),
+            relativeTo: entity.parent,
+            duration: duration / 2,
+            timingFunction: .easeInOut
+        )
+    }
+    
 }

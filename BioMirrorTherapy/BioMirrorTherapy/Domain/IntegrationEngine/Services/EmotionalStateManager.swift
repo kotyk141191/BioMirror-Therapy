@@ -461,118 +461,131 @@ class EmotionalStateManager {
     }
 }
 
-// Supporting helper class for analysis
-private class EmotionalCoherenceAnalyzer {
-    // Calculate coherence between facial and physiological states
-    func calculateCoherenceIndex(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> Float {
-        // This is a simplified placeholder implementation
-        // In a real app, this would use more sophisticated algorithms to correlate
-        // facial expressions with physiological arousal
-        
-        // For common emotions, check if physiological state matches expected pattern
-        let facialEmotion = emotionalState.primaryEmotion
-        let arousal = physiologicalState.arousalLevel
-        
-        // Check if arousal level matches expected pattern for the emotion
-        var coherence: Float = 0.5 // Neutral starting point
-        
-        switch facialEmotion {
-        case .happiness, .anger, .surprise:
-            // High arousal emotions - higher coherence when arousal is high
-            coherence = min(1.0, 0.5 + Float(arousal))
-            
-        case .sadness, .disgust:
-            // Mixed arousal emotions - moderate coherence is best
-            coherence = 1.0 - abs(Float(arousal) - 0.5) * 2
-            
-        case .fear:
-            // High arousal emotion, but can also include freeze response
-            if physiologicalState.motionMetrics.freezeIndex > 0.6 {
-                // Fear with freeze - high coherence
-                coherence = 0.8 + min(0.2, Float(arousal) * 0.2)
-            } else {
-                // Fear with fight/flight - high coherence with high arousal
-                coherence = min(1.0, 0.4 + Float(arousal) * 0.6)
-            }
-            
-        case .neutral:
-            // Neutral should have low arousal for high coherence
-            coherence = 1.0 - min(1.0, Float(arousal) * 2)
-            
-        default:
-            // Other emotions - use moderate coherence
-            coherence = 0.5
-        }
-        
-        // Factor in confidence of facial expression detection
-        coherence *= emotionalState.confidence
-        
-        // Factor in quality of physiological data
-        coherence *= physiologicalState.qualityIndex
-        
-        return coherence
-    }
-    
-    // Calculate emotional masking index
-    func calculateEmotionalMaskingIndex(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> Float {
-        // Emotional masking occurs when the face appears neutral but physiology shows activation
-        // or when facial emotion doesn't match physiological state
-        
-        // Check if face is neutral but arousal is high
-        if emotionalState.primaryEmotion == .neutral && physiologicalState.arousalLevel > 0.6 {
-            return min(1.0, physiologicalState.arousalLevel * 1.5)
-        }
-        
-        // Check if face shows positive emotion but physiology suggests otherwise
-        if emotionalState.primaryEmotion == .happiness {
-            // High HRV typically indicates calm/positive state
-            // If HRV is low but face shows happiness, might be masking
-            let hrvNormalized = Float(physiologicalState.hrvMetrics.heartRateVariability / 100.0) // Normalize to 0-1 range
-            if hrvNormalized < 0.3 && physiologicalState.arousalLevel > 0.7 {
-                return 0.8
-            }
-        }
-        
-        // Calculate general mismatch between facial and physiological indicators
-        let coherence = calculateCoherenceIndex(emotionalState: emotionalState, physiologicalState: physiologicalState)
-        let masking = 1.0 - coherence
-        
-        return masking
-    }
-    
-    // Calculate dissociation index
-    func calculateDissociationIndex(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> Float {
-        // Dissociation indicators include:
-        // 1. Low facial expressivity (neutral, flat affect)
-        // 2. Freeze response in motion metrics
-        // 3. Disconnection between face and physiological response
-        
-        var dissociationScore: Float = 0.0
-        
-        // Check for flat affect (low intensity neutral face)
-        if emotionalState.primaryEmotion == .neutral && emotionalState.primaryIntensity < 0.3 {
-            dissociationScore += 0.4
-        }
-        
-        // Check for freeze response
-        if physiologicalState.motionMetrics.freezeIndex > 0.7 {
-            dissociationScore += 0.4
-        }
-        
-        // Check for characteristic dissociative HRV pattern
-        // (in a real implementation, this would use more sophisticated analysis)
-        if physiologicalState.hrvMetrics.heartRateVariability < 20 &&
-           physiologicalState.hrvMetrics.heartRate < 70 {
-            dissociationScore += 0.3
-        }
-        
-        // Factor in coherence (low coherence can indicate dissociation)
-        let coherence = calculateCoherenceIndex(emotionalState: emotionalState, physiologicalState: physiologicalState)
-        if coherence < 0.3 {
-            dissociationScore += 0.3 * (1.0 - coherence)
-        }
-        
-        // Cap at 1.0
-        return min(1.0, dissociationScore)
-    }
-}
+//// Supporting helper class for analysis
+//private class EmotionalCoherenceAnalyzer {
+//    // Calculate coherence between facial and physiological states
+//    func calculateCoherenceIndex(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> Float {
+//        // Base coherence score
+//        var coherence: Float = 0.5
+//        
+//        // Get expected arousal range for the emotion
+//        let (minArousal, maxArousal) = expectedArousalRange(for: emotionalState.primaryEmotion)
+//        
+//        // Actual arousal
+//        let actualArousal = physiologicalState.arousalLevel
+//        
+//        // If arousal is within expected range, increase coherence
+//        if actualArousal >= minArousal && actualArousal <= maxArousal {
+//            // Higher coherence when closer to the middle of the expected range
+//            let rangeCenter = (minArousal + maxArousal) / 2
+//            let distanceFromCenter = abs(actualArousal - rangeCenter)
+//            let rangeWidth = maxArousal - minArousal
+//            
+//            // Transform to 0-1 scale with higher values for better match
+//            coherence = 1.0 - (distanceFromCenter / (rangeWidth / 2))
+//        } else {
+//            // Lower coherence when outside expected range
+//            // How far outside the range?
+//            let distanceOutside = min(abs(actualArousal - minArousal), abs(actualArousal - maxArousal))
+//            coherence = max(0.1, 0.5 - distanceOutside)
+//        }
+//        
+//        // Weight by confidence in emotional state detection
+//        coherence *= emotionalState.confidence
+//        
+//        // Weight by physiological data quality
+//        coherence *= min(1.0, physiologicalState.qualityIndex * 1.2)
+//        
+//        return coherence
+//    }
+//
+//    private func expectedArousalRange(for emotion: EmotionType) -> (Float, Float) {
+//        switch emotion {
+//        case .happiness:
+//            return (0.4, 0.8) // Moderate to high arousal
+//        case .sadness:
+//            return (0.1, 0.4) // Low to moderate arousal
+//        case .anger:
+//            return (0.7, 1.0) // High arousal
+//        case .fear:
+//            return (0.6, 0.9) // High arousal
+//        case .surprise:
+//            return (0.5, 0.9) // Moderate to high arousal
+//        case .disgust:
+//            return (0.3, 0.7) // Moderate arousal
+//        case .neutral:
+//            return (0.2, 0.5) // Low to moderate arousal
+//        case .contempt:
+//            return (0.3, 0.6) // Moderate arousal
+//        case .dissociation:
+//            return (0.1, 0.3) // Low arousal
+//        default:
+//            return (0.3, 0.7) // Default range
+//        }
+//    }
+//    
+//    // Calculate emotional masking index
+//    func calculateEmotionalMaskingIndex(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> Float {
+//        // Emotional masking occurs when the face appears neutral but physiology shows activation
+//        // or when facial emotion doesn't match physiological state
+//        
+//        // Check if face is neutral but arousal is high
+//        if emotionalState.primaryEmotion == .neutral && physiologicalState.arousalLevel > 0.6 {
+//            return min(1.0, physiologicalState.arousalLevel * 1.5)
+//        }
+//        
+//        // Check if face shows positive emotion but physiology suggests otherwise
+//        if emotionalState.primaryEmotion == .happiness {
+//            // High HRV typically indicates calm/positive state
+//            // If HRV is low but face shows happiness, might be masking
+//            let hrvNormalized = Float(physiologicalState.hrvMetrics.heartRateVariability / 100.0) // Normalize to 0-1 range
+//            if hrvNormalized < 0.3 && physiologicalState.arousalLevel > 0.7 {
+//                return 0.8
+//            }
+//        }
+//        
+//        // Calculate general mismatch between facial and physiological indicators
+//        let coherence = calculateCoherenceIndex(emotionalState: emotionalState, physiologicalState: physiologicalState)
+//        let masking = 1.0 - coherence
+//        
+//        return masking
+//    }
+//    
+//    // Calculate dissociation index
+//    func calculateDissociationIndex(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> Float {
+//        // Dissociation indicators include:
+//        // 1. Low facial expressivity (neutral, flat affect)
+//        // 2. Freeze response in motion metrics
+//        // 3. Disconnection between face and physiological response
+//        
+//        var dissociationScore: Float = 0.0
+//        
+//        // Check for flat affect (low intensity neutral face)
+//        if emotionalState.primaryEmotion == .neutral && emotionalState.primaryIntensity < 0.3 {
+//            dissociationScore += 0.4
+//        }
+//        
+//        // Check for freeze response
+//        if physiologicalState.motionMetrics.freezeIndex > 0.7 {
+//            dissociationScore += 0.4
+//        }
+//        
+//        // Check for characteristic dissociative HRV pattern
+//        // (in a real implementation, this would use more sophisticated analysis)
+//        if physiologicalState.hrvMetrics.heartRateVariability < 20 &&
+//           physiologicalState.hrvMetrics.heartRate < 70 {
+//            dissociationScore += 0.3
+//        }
+//        
+//        // Factor in coherence (low coherence can indicate dissociation)
+//        let coherence = calculateCoherenceIndex(emotionalState: emotionalState, physiologicalState: physiologicalState)
+//        if coherence < 0.3 {
+//            dissociationScore += 0.3 * (1.0 - coherence)
+//        }
+//        
+//        // Cap at 1.0
+//        return min(1.0, dissociationScore)
+//    }
+//    
+//    
+//}
