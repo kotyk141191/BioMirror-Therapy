@@ -517,46 +517,74 @@ class CharacterAnimationController {
         )
     }
     
-    private func updateFacialBlendShapes(for emotion: EmotionType, intensity: Float) {
-        // In a real implementation with ARKit-driven face rig,
-        // this would set blend shape values on the character's face model
-        
-        // Since we're using a simplified character, we'll just update the face entity's properties
+    // Complete implementation for updateFacialBlendShapes in CharacterAnimationController
+    func updateFacialBlendShapes(for emotion: EmotionType, intensity: Float) {
         guard let faceEntity = faceEntity else { return }
         
-        // Reset all blend shapes
-        // (In a real app, this would set all blend shapes to 0)
-        
-        // Apply emotion-specific blend shapes
         switch emotion {
         case .happiness:
-            // Simulate smile by scaling face horizontally
+            // Smile expression - adjust mouth corners up
+            let smileTransform = simd_quatf(angle: Float(intensity * 0.3), axis: [0, 0, 1])
+            faceEntity.transform.rotation = smileTransform
             faceEntity.scale = [1.0 + (0.2 * intensity), 1.0 - (0.1 * intensity), 1.0]
             
         case .sadness:
-            // Simulate frown by scaling face vertically
+            // Sad expression - adjust mouth corners down
+            let sadTransform = simd_quatf(angle: Float(-intensity * 0.2), axis: [0, 0, 1])
+            faceEntity.transform.rotation = sadTransform
             faceEntity.scale = [1.0, 1.0 - (0.2 * intensity), 1.0]
             
         case .anger:
-            // Simulate anger by scaling face
+            // Anger expression - furrow brow, narrow eyes
+            let angerTransform = simd_quatf(angle: Float(intensity * 0.1), axis: [1, 0, 0])
+            faceEntity.transform.rotation = angerTransform
             faceEntity.scale = [1.0 + (0.1 * intensity), 1.0 - (0.15 * intensity), 1.0]
             
         case .fear:
-            // Simulate fear by scaling face
+            // Fear expression - widened eyes, raised brows
+            let fearTransform = simd_quatf(angle: Float(-intensity * 0.15), axis: [1, 0, 0])
+            faceEntity.transform.rotation = fearTransform
             faceEntity.scale = [1.0 - (0.1 * intensity), 1.0 + (0.1 * intensity), 1.0]
             
         case .surprise:
-            // Simulate surprise by scaling face
+            // Surprise expression - wide eyes, raised brows, open mouth
+            let surpriseTransform = simd_quatf(angle: Float(-intensity * 0.2), axis: [1, 0, 0])
+            faceEntity.transform.rotation = surpriseTransform
             faceEntity.scale = [1.0 + (0.1 * intensity), 1.0 + (0.2 * intensity), 1.0]
             
         case .neutral:
             // Reset to neutral
+            faceEntity.transform.rotation = simd_quatf(angle: 0, axis: [0, 0, 1])
             faceEntity.scale = [1.0, 1.0, 1.0]
             
         default:
             // Default to neutral
+            faceEntity.transform.rotation = simd_quatf(angle: 0, axis: [0, 0, 1])
             faceEntity.scale = [1.0, 1.0, 1.0]
         }
+    }
+
+    // Implement animateBreathing method
+    func animateBreathing(speed: Float, depth: Float) {
+        guard let bodyEntity = bodyEntity else { return }
+        
+        // Convert speed to duration (lower speed = longer duration)
+        let duration = 4.0 - (Double(speed) * 3.0)
+        
+        // Calculate breathing amplitude based on depth
+        let amplitude = 0.02 + (Double(depth) * 0.05)
+        
+        // Create animation
+        let animation = CABasicAnimation(keyPath: "position.y")
+        animation.duration = duration / 2
+        animation.fromValue = bodyEntity.position.y
+        animation.toValue = bodyEntity.position.y + amplitude
+        animation.autoreverses = true
+        animation.repeatCount = .greatestFiniteMagnitude
+        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+        
+        // Apply animation
+        bodyEntity.addAnimation(animation, forKey: "breathing")
     }
     
     private func adjustBodyPosture(for emotion: EmotionType, intensity: Float) {

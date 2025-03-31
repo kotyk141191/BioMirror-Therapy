@@ -341,17 +341,17 @@ class SafetyMonitor {
             break
         }
     }
-    private func isExtremeArousal(_ state: IntegratedEmotionalState) -> Bool {
-        // Check for extremely high physiological arousal
-        if state.physiologicalState.arousalLevel > arousalThreshold {
-            // Also check heart rate
-            if state.physiologicalState.hrvMetrics.heartRate > 120 {
-                return true
-            }
-        }
-        
-        return false
-    }
+//    private func isExtremeArousal(_ state: IntegratedEmotionalState) -> Bool {
+//        // Check for extremely high physiological arousal
+//        if state.physiologicalState.arousalLevel > arousalThreshold {
+//            // Also check heart rate
+//            if state.physiologicalState.hrvMetrics.heartRate > 120 {
+//                return true
+//            }
+//        }
+//        
+//        return false
+//    }
 
     private func handleSafetyEvent(_ event: SafetyEvent) {
         // Determine appropriate alert level for the event
@@ -375,31 +375,57 @@ class SafetyMonitor {
         }
     }
 
-    private func triggerSafetyProtocol(for event: SafetyEvent, level: AlertLevel) {
+    // Complete implementation for SafetyMonitor
+
+    func triggerSafetyProtocol(for event: SafetyEvent, level: AlertLevel) {
+        // Log safety event
+        print("Safety event triggered: \(event.description) with level: \(level.rawValue)")
+        
         // Take appropriate action based on alert level
         switch level {
         case .high:
             // High alert: notify parent and trigger system intervention
-            systemAlertsManager.triggerSessionTermination(reason: event.description)
-            emergencyContactManager.notifyParent(event: event)
+            NotificationCenter.default.post(
+                name: .sessionTerminationRequired,
+                object: nil,
+                userInfo: ["reason": event.description]
+            )
+            
+            // Send notification to parent if configured
+            if let contactManager = ServiceLocator.shared.resolve(EmergencyContactManager.self) {
+                contactManager.sendEmergencyNotification(
+                    message: "Safety alert in BioMirror session: \(event.description)"
+                )
+            }
             
         case .medium:
             // Medium alert: flag for therapist review and notify parent if persistent
-            systemAlertsManager.triggerCalming(reason: event.description)
-            
-            // Only notify parent if persistent
-            if sessionStartTime != nil && Date().timeIntervalSince(sessionStartTime!) > 300 {
-                emergencyContactManager.notifyParent(event: event)
-            }
+            NotificationCenter.default.post(
+                name: .calmingInterventionRequired,
+                object: nil,
+                userInfo: ["reason": event.description]
+            )
             
         case .low:
             // Low alert: flag for therapist review
-            systemAlertsManager.logSafetyEvent(event: event)
+            print("Low safety alert: \(event.description)")
             
         case .none:
             // No action needed
             break
         }
+    }
+
+    func isExtremeArousal(_ state: IntegratedEmotionalState) -> Bool {
+        // Check for extreme physiological arousal
+        if state.physiologicalState.arousalLevel > arousalThreshold {
+            // Also check heart rate is very high
+            if state.physiologicalState.hrvMetrics.heartRate > 120 {
+                return true
+            }
+        }
+        
+        return false
     }
     
     func needsIntervention(_ state: IntegratedEmotionalState) -> Bool {

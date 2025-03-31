@@ -44,7 +44,7 @@ import Foundation
 struct SessionMetrics {
     var sessionDuration: TimeInterval = 0
     var averageCoherenceIndex: Float = 0
-    var emotionsExpressed: Set<Int> = []
+    var emotionsExpressed: Set<EmotionRecord> = []
     var emotionalExpressionRange: Float = 0
     var regulationCapacity: Float = 0
     var regulationImprovement: Float = 0

@@ -63,6 +63,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // MARK: - Private Methods
     
+    // Initialize core services in AppDelegate
     func initializeServices() {
         // Register services in dependency container
         ServiceLocator.shared.register(PersistenceService.self) { [weak self] in
@@ -80,8 +81,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return AppleWatchBiometricService()
         }
         
-        // Register safety monitor (needed by other services)
-        let safetyMonitor = SafetyMonitor()
+        // Register emotional integration service first
+        let emotionalIntegrationService = EmotionalCoherenceAnalyzer(
+            facialAnalysisService: LiDARFacialAnalysisService(),
+            biometricAnalysisService: AppleWatchBiometricService()
+        )
+        ServiceLocator.shared.register(EmotionalIntegrationService.self) {
+            return emotionalIntegrationService
+        }
+
+        // Register safety monitor with the emotionalIntegrationService
+        let safetyMonitor = SafetyMonitor(emotionalIntegrationService: emotionalIntegrationService)
         ServiceLocator.shared.register(SafetyMonitor.self) {
             return safetyMonitor
         }
@@ -100,8 +110,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return AdaptiveResponseGenerator(emotionalIntegrationService: integrationService, safetyMonitor: safetyMonitor)
         }
         
-        // Initialize device verification
-        DeviceCapabilityVerifier.verify()
+        // Register progress tracker
+        ServiceLocator.shared.register(ProgressTracker.self) {
+            return ProgressTracker()
+        }
+        
+        // Register emergency contact manager
+        ServiceLocator.shared.register(EmergencyContactManager.self) {
+            return EmergencyContactManager()
+        }
     }
     
     private func setupAnalytics() {

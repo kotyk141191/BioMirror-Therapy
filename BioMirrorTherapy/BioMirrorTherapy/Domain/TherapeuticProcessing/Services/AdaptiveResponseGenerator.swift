@@ -220,6 +220,40 @@ class AdaptiveResponseGenerator: TherapeuticResponseService {
         )
     }
     
+    // Complete implementation for generateGroundingResponse in AdaptiveResponseGenerator
+
+    func createGenericGroundingResponse(in session: TherapeuticSession) -> TherapeuticResponse {
+        // Generate a structured response for grounding
+        let verbal = "Let's take a moment to breathe together. Notice how the air feels coming in and out."
+        
+        // Select appropriate action based on session phase
+        let action: CharacterAction
+        switch session.sessionPhase {
+        case .connection, .awareness:
+            // Gentle approach for early phases
+            action = .breathing(speed: 0.3, depth: 0.5)
+        case .integration, .regulation:
+            // More structured approach for later phases
+            action = .breathing(speed: 0.4, depth: 0.7)
+        case .transfer:
+            // Encourage self-regulation
+            action = .attention(focus: .direct)
+        }
+        
+        return TherapeuticResponse(
+            timestamp: Date(),
+            responseType: .grounding,
+            characterEmotionalState: .neutral,
+            characterEmotionalIntensity: 0.3,
+            characterAction: action,
+            verbal: verbal,
+            nonverbal: "Calm, grounding presence with steady breathing",
+            interventionLevel: .moderate,
+            targetEmotionalState: .neutral,
+            duration: 15.0
+        )
+    }
+    
     private func generateAwarenessResponse(for state: IntegratedEmotionalState, in session: TherapeuticSession) -> TherapeuticResponse {
         // In awareness phase, help child recognize and name emotions
         
@@ -557,21 +591,21 @@ class AdaptiveResponseGenerator: TherapeuticResponseService {
         }
     }
     
-    private func createGenericGroundingResponse(in session: TherapeuticSession) -> TherapeuticResponse {
-        // Create a gentle default grounding response
-        return TherapeuticResponse(
-            timestamp: Date(),
-            responseType: .grounding,
-            characterEmotionalState: .neutral,
-            characterEmotionalIntensity: 0.3,
-            characterAction: .breathing(speed: 0.4, depth: 0.6),
-            verbal: "Let's take a moment to notice where we are right now. Can you feel your feet on the ground?",
-            nonverbal: "Calm, grounding presence",
-            interventionLevel: .minimal,
-            targetEmotionalState: .neutral,
-            duration: 10.0
-        )
-    }
+//    private func createGenericGroundingResponse(in session: TherapeuticSession) -> TherapeuticResponse {
+//        // Create a gentle default grounding response
+//        return TherapeuticResponse(
+//            timestamp: Date(),
+//            responseType: .grounding,
+//            characterEmotionalState: .neutral,
+//            characterEmotionalIntensity: 0.3,
+//            characterAction: .breathing(speed: 0.4, depth: 0.6),
+//            verbal: "Let's take a moment to notice where we are right now. Can you feel your feet on the ground?",
+//            nonverbal: "Calm, grounding presence",
+//            interventionLevel: .minimal,
+//            targetEmotionalState: .neutral,
+//            duration: 10.0
+//        )
+//    }
     
     private func determineDissociationSeverity(_ index: Float) -> DissociationSeverity {
         if index > 0.8 {

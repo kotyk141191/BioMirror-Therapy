@@ -220,6 +220,82 @@ class EmotionalCoherenceAnalyzer: EmotionalIntegrationService {
         return min(1.0, coherence)
     }
     
+    // Complete implementation for calculateDissociationIndex in EmotionalCoherenceAnalyzer
+//    private func calculateDissociationIndex(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> Float {
+//        // Dissociation indicators include:
+//        // 1. Low facial expressivity (neutral, flat affect)
+//        // 2. Freeze response in motion metrics
+//        // 3. Disconnection between face and physiological response
+//        
+//        var dissociationScore: Float = 0.0
+//        
+//        // Check for flat affect (low intensity neutral face)
+//        if emotionalState.primaryEmotion == .neutral && emotionalState.primaryIntensity < 0.3 {
+//            dissociationScore += 0.4
+//        }
+//        
+//        // Check for freeze response
+//        if physiologicalState.motionMetrics.freezeIndex > 0.7 {
+//            dissociationScore += 0.4
+//        }
+//        
+//        // Check for characteristic dissociative HRV pattern
+//        if physiologicalState.hrvMetrics.heartRateVariability < 20 &&
+//           physiologicalState.hrvMetrics.heartRate < 70 {
+//            dissociationScore += 0.3
+//        }
+//        
+//        // Check for lack of micro-expressions
+//        if emotionalState.microExpressions.isEmpty && emotionalState.confidence > 0.7 {
+//            dissociationScore += 0.2
+//        }
+//        
+//        // Factor in coherence (low coherence can indicate dissociation)
+//        let coherence = calculateCoherenceIndex(emotionalState: emotionalState, physiologicalState: physiologicalState)
+//        if coherence < 0.3 {
+//            dissociationScore += 0.3 * (1.0 - coherence)
+//        }
+//        
+//        return min(1.0, dissociationScore)
+//    }
+
+    // Complete implementation for calculateEmotionalMaskingIndex
+    private func calculateEmotionalMaskingIndex(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> Float {
+        // Base masking score
+        var masking: Float = 0.0
+        
+        // Check if face is neutral but arousal is high
+        if emotionalState.primaryEmotion == .neutral && physiologicalState.arousalLevel > 0.6 {
+            masking = min(1.0, physiologicalState.arousalLevel * 1.5)
+        }
+        
+        // Check if face shows positive emotion but physiology suggests otherwise
+        if emotionalState.primaryEmotion == .happiness {
+            // High HRV typically indicates calm/positive state
+            // If HRV is low but face shows happiness, might be masking
+            let hrvNormalized = Float(physiologicalState.hrvMetrics.heartRateVariability / 100.0)
+            if hrvNormalized < 0.3 && physiologicalState.arousalLevel > 0.7 {
+                masking = max(masking, 0.8)
+            }
+        }
+        
+        // Check for mismatch between primary and secondary emotions
+        if let secondaryEmotion = emotionalState.secondaryEmotions.max(by: { $0.value < $1.value })?.key,
+           let secondaryIntensity = emotionalState.secondaryEmotions[secondaryEmotion] {
+            
+            if secondaryIntensity > emotionalState.primaryIntensity * 0.8 {
+                // Secondary emotion is almost as strong as primary
+                masking = max(masking, 0.4)
+            }
+        }
+        
+        // Calculate general mismatch between facial and physiological indicators
+        let coherence = calculateCoherenceIndex(emotionalState: emotionalState, physiologicalState: physiologicalState)
+        masking = max(masking, 1.0 - coherence)
+        
+        return min(1.0, masking)
+    }
+    
     private func adjustCoherenceForPhysiologicalSigns(coherence: Float, emotion: EmotionType, physiologicalState: PhysiologicalState) -> Float {
         var adjustedCoherence = coherence
         
@@ -295,41 +371,41 @@ class EmotionalCoherenceAnalyzer: EmotionalIntegrationService {
         }
     }
     
-    private func calculateEmotionalMaskingIndex(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> Float {
-        // Base masking score
-        var masking: Float = 0.0
-        
-        // Check if face is neutral but arousal is high
-        if emotionalState.primaryEmotion == .neutral && physiologicalState.arousalLevel > 0.6 {
-            masking = min(1.0, physiologicalState.arousalLevel * 1.5)
-        }
-        
-        // Check if face shows positive emotion but physiology suggests otherwise
-        if emotionalState.primaryEmotion == .happiness {
-            // High HRV typically indicates calm/positive state
-            // If HRV is low but face shows happiness, might be masking
-            let hrvNormalized = Float(physiologicalState.hrvMetrics.heartRateVariability / 100.0) // Normalize to 0-1 range
-            if hrvNormalized < 0.3 && physiologicalState.arousalLevel > 0.7 {
-                masking = max(masking, 0.8)
-            }
-        }
-        
-        // Check for mismatch between primary and secondary emotions
-        if let secondaryEmotion = emotionalState.secondaryEmotions.max(by: { $0.value < $1.value })?.key,
-           let secondaryIntensity = emotionalState.secondaryEmotions[secondaryEmotion] {
-            
-            if secondaryIntensity > emotionalState.primaryIntensity * 0.8 {
-                // Secondary emotion is almost as strong as primary
-                masking = max(masking, 0.4)
-            }
-        }
-        
-        // Calculate general mismatch between facial and physiological indicators
-        let coherence = calculateCoherenceIndex(emotionalState: emotionalState, physiologicalState: physiologicalState)
-        masking = max(masking, 1.0 - coherence)
-        
-        return min(1.0, masking)
-    }
+//    private func calculateEmotionalMaskingIndex(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> Float {
+//        // Base masking score
+//        var masking: Float = 0.0
+//        
+//        // Check if face is neutral but arousal is high
+//        if emotionalState.primaryEmotion == .neutral && physiologicalState.arousalLevel > 0.6 {
+//            masking = min(1.0, physiologicalState.arousalLevel * 1.5)
+//        }
+//        
+//        // Check if face shows positive emotion but physiology suggests otherwise
+//        if emotionalState.primaryEmotion == .happiness {
+//            // High HRV typically indicates calm/positive state
+//            // If HRV is low but face shows happiness, might be masking
+//            let hrvNormalized = Float(physiologicalState.hrvMetrics.heartRateVariability / 100.0) // Normalize to 0-1 range
+//            if hrvNormalized < 0.3 && physiologicalState.arousalLevel > 0.7 {
+//                masking = max(masking, 0.8)
+//            }
+//        }
+//        
+//        // Check for mismatch between primary and secondary emotions
+//        if let secondaryEmotion = emotionalState.secondaryEmotions.max(by: { $0.value < $1.value })?.key,
+//           let secondaryIntensity = emotionalState.secondaryEmotions[secondaryEmotion] {
+//            
+//            if secondaryIntensity > emotionalState.primaryIntensity * 0.8 {
+//                // Secondary emotion is almost as strong as primary
+//                masking = max(masking, 0.4)
+//            }
+//        }
+//        
+//        // Calculate general mismatch between facial and physiological indicators
+//        let coherence = calculateCoherenceIndex(emotionalState: emotionalState, physiologicalState: physiologicalState)
+//        masking = max(masking, 1.0 - coherence)
+//        
+//        return min(1.0, masking)
+//    }
     
     private func calculateDissociationIndex(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> Float {
         // Dissociation indicators include:
