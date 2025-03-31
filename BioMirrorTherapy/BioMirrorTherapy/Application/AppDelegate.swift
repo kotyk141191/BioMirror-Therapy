@@ -10,7 +10,7 @@
 import UIKit
 import CoreData
 
-@main
+//@main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -63,11 +63,41 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // MARK: - Private Methods
     
-    private func initializeServices() {
+    func initializeServices() {
         // Register services in dependency container
         ServiceLocator.shared.register(PersistenceService.self) { [weak self] in
             guard let self = self else { fatalError("AppDelegate deallocated") }
             return CoreDataPersistenceService(container: self.persistentContainer)
+        }
+        
+        // Register facial analysis service
+        ServiceLocator.shared.register(FacialAnalysisService.self) {
+            return LiDARFacialAnalysisService()
+        }
+        
+        // Register biometric analysis service
+        ServiceLocator.shared.register(BiometricAnalysisService.self) {
+            return AppleWatchBiometricService()
+        }
+        
+        // Register safety monitor (needed by other services)
+        let safetyMonitor = SafetyMonitor()
+        ServiceLocator.shared.register(SafetyMonitor.self) {
+            return safetyMonitor
+        }
+        
+        // Register emotional integration service
+        ServiceLocator.shared.register(EmotionalIntegrationService.self) {
+            let facialService: FacialAnalysisService = ServiceLocator.shared.resolve()
+            let biometricService: BiometricAnalysisService = ServiceLocator.shared.resolve()
+            return EmotionalCoherenceAnalyzer(facialAnalysisService: facialService, biometricAnalysisService: biometricService)
+        }
+        
+        // Register therapeutic response service
+        ServiceLocator.shared.register(TherapeuticResponseService.self) {
+            let integrationService: EmotionalIntegrationService = ServiceLocator.shared.resolve()
+            let safetyMonitor: SafetyMonitor = ServiceLocator.shared.resolve()
+            return AdaptiveResponseGenerator(emotionalIntegrationService: integrationService, safetyMonitor: safetyMonitor)
         }
         
         // Initialize device verification
