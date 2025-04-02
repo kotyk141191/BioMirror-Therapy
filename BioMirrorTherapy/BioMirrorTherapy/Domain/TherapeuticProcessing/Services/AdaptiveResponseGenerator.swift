@@ -81,80 +81,80 @@ class AdaptiveResponseGenerator: TherapeuticResponseService {
         }
     }
     
-    func generateGroundingResponse(for dissociationStatus: DissociationStatus, in session: TherapeuticSession) -> TherapeuticResponse {
-        // Generate grounding response based on dissociation severity
-        
-        // Get severity details
-        let severity: DissociationSeverity
-        var intensity: Float = 0.0
-        
-        switch dissociationStatus {
-        case .active(let activeSeverity, _, let activeIntensity):
-            severity = activeSeverity
-            intensity = activeIntensity
-        case .recent(let recentSeverity, _, let recentIntensity):
-            severity = recentSeverity
-            intensity = recentIntensity
-        case .none:
-            // Shouldn't happen, but provide a default mild grounding response
-            return createGenericGroundingResponse(in: session)
-        }
-        
-        // Select appropriate technique based on severity
-        let technique = selectGroundingTechnique(for: severity, intensity: intensity)
-        
-        // Create verbal instruction
-        let verbal: String
-        switch technique {
-        case .breathing:
-            verbal = "Let's take a deep breath together. Breathe in... and out..."
-        case .sensory:
-            verbal = "Can you notice something you can see right now? What colors do you notice?"
-        case .movement:
-            verbal = "Let's gently move our hands. Can you wiggle your fingers?"
-        case .cognitive:
-            verbal = "Let's count together. One, two, three..."
-        case .naming:
-            verbal = "Can you name something you can see that is blue?"
-        }
-        
-        // Create character action
-        let action: CharacterAction
-        switch technique {
-        case .breathing:
-            action = .breathing(speed: 0.3, depth: 0.8)
-        case .sensory, .naming:
-            action = .attention(focus: .direct)
-        case .movement:
-            action = .bodyMovement(type: .gentle, intensity: 0.6)
-        case .cognitive:
-            action = .facialExpression(emotion: .interest, intensity: 0.7)
-        }
-        
-        // Set intervention level based on severity
-        let interventionLevel: InterventionLevel
-        switch severity {
-        case .potential, .mild:
-            interventionLevel = .minimal
-        case .moderate:
-            interventionLevel = .moderate
-        case .severe:
-            interventionLevel = .intensive
-        }
-        
-        return TherapeuticResponse(
-            timestamp: Date(),
-            responseType: .grounding,
-            characterEmotionalState: .neutral,
-            characterEmotionalIntensity: 0.3,
-            characterAction: action,
-            verbal: verbal,
-            nonverbal: "Maintains calm presence with grounding focus",
-            interventionLevel: interventionLevel,
-            targetEmotionalState: .neutral,
-            duration: 15.0
-        )
-    }
+//    func generateGroundingResponse(for dissociationStatus: DissociationStatus, in session: TherapeuticSession) -> TherapeuticResponse {
+//        // Generate grounding response based on dissociation severity
+//        
+//        // Get severity details
+//        let severity: DissociationSeverity
+//        var intensity: Float = 0.0
+//        
+//        switch dissociationStatus {
+//        case .active(let activeSeverity, _, let activeIntensity):
+//            severity = activeSeverity
+//            intensity = activeIntensity
+//        case .recent(let recentSeverity, _, let recentIntensity):
+//            severity = recentSeverity
+//            intensity = recentIntensity
+//        case .none:
+//            // Shouldn't happen, but provide a default mild grounding response
+//            return createGenericGroundingResponse(in: session)
+//        }
+//        
+//        // Select appropriate technique based on severity
+//        let technique = selectGroundingTechnique(for: severity, intensity: intensity)
+//        
+//        // Create verbal instruction
+//        let verbal: String
+//        switch technique {
+//        case .breathing:
+//            verbal = "Let's take a deep breath together. Breathe in... and out..."
+//        case .sensory:
+//            verbal = "Can you notice something you can see right now? What colors do you notice?"
+//        case .movement:
+//            verbal = "Let's gently move our hands. Can you wiggle your fingers?"
+//        case .cognitive:
+//            verbal = "Let's count together. One, two, three..."
+//        case .naming:
+//            verbal = "Can you name something you can see that is blue?"
+//        }
+//        
+//        // Create character action
+//        let action: CharacterAction
+//        switch technique {
+//        case .breathing:
+//            action = .breathing(speed: 0.3, depth: 0.8)
+//        case .sensory, .naming:
+//            action = .attention(focus: .direct)
+//        case .movement:
+//            action = .bodyMovement(type: .gentle, intensity: 0.6)
+//        case .cognitive:
+//            action = .facialExpression(emotion: .interest, intensity: 0.7)
+//        }
+//        
+//        // Set intervention level based on severity
+//        let interventionLevel: InterventionLevel
+//        switch severity {
+//        case .potential, .mild:
+//            interventionLevel = .minimal
+//        case .moderate:
+//            interventionLevel = .moderate
+//        case .severe:
+//            interventionLevel = .intensive
+//        }
+//        
+//        return TherapeuticResponse(
+//            timestamp: Date(),
+//            responseType: .grounding,
+//            characterEmotionalState: .neutral,
+//            characterEmotionalIntensity: 0.3,
+//            characterAction: action,
+//            verbal: verbal,
+//            nonverbal: "Maintains calm presence with grounding focus",
+//            interventionLevel: interventionLevel,
+//            targetEmotionalState: .neutral,
+//            duration: 15.0
+//        )
+//    }
     
     func setResponsePreferences(_ preferences: ResponsePreferences) {
         self.preferences = preferences
@@ -637,7 +637,7 @@ class AdaptiveResponseGenerator: TherapeuticResponseService {
     }
     
     // Add this method to AdaptiveResponseGenerator
-    private func generateGroundingResponse(for dissociationStatus: DissociationStatus, in session: TherapeuticSession) -> TherapeuticResponse {
+    internal func generateGroundingResponse(for dissociationStatus: DissociationStatus, in session: TherapeuticSession) -> TherapeuticResponse {
         // Generate response based on dissociation severity
         let severity: DissociationSeverity
         let intensity: Float

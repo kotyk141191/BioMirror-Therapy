@@ -16,6 +16,7 @@ struct ChildInfo {
     let overallProgress: Float
 }
 
+// Fix for SessionData in TherapistDashboardModels.swift
 struct SessionData: Identifiable {
     let id: String
     let date: Date
@@ -27,8 +28,11 @@ struct SessionData: Identifiable {
     let emotionsExpressed: [String]
     let dissociationEpisodes: Int
     let dissociationDuration: TimeInterval
+    let regulationEvents: Int
+    let avgRegulationTime: TimeInterval
     let therapistNotes: String?
     let emotionalTimeline: [EmotionTimelinePoint]
+    let coherenceData: [CoherenceDataPoint]
     
     var formattedDate: String {
         let formatter = DateFormatter()
@@ -40,6 +44,18 @@ struct SessionData: Identifiable {
     var formattedDuration: String {
         let minutes = Int(duration / 60)
         return "\(minutes) min"
+    }
+    
+    var formattedRegulationTime: String {
+        let seconds = Int(avgRegulationTime)
+        
+        if seconds >= 60 {
+            let minutes = seconds / 60
+            let remainingSeconds = seconds % 60
+            return "\(minutes)m \(remainingSeconds)s"
+        } else {
+            return "\(seconds)s"
+        }
     }
     
     var statusColor: Color {
