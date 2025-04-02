@@ -21,14 +21,15 @@ struct TherapeuticResponse {
 }
 
 enum TherapeuticResponseType {
-    case mirroring // Reflection of child's emotion
-    case titration // Slightly modified version of child's emotion
-    case regulation // Response to help regulate emotion
-    case grounding // Response to address dissociation
-    case validation // Emotional validation
-    case exploration // Encourages emotional exploration
-    case celebration // Positive reinforcement
-    case transition // Help move between activities
+    case mirroring       // Reflection of child's emotion
+    case titration       // Slightly modified version of child's emotion
+    case regulation      // Response to help regulate emotion
+    case grounding       // Response to address dissociation
+    case validation      // Emotional validation
+    case exploration     // Encourages emotional exploration
+    case celebration     // Positive reinforcement
+    case transition      // Help move between activities
+    case integration     // Integrate multiple emotional states or insights
 }
 
 enum InterventionLevel {

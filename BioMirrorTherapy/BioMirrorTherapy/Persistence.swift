@@ -16,7 +16,7 @@ protocol PersistenceService {
 }
 
 class CoreDataPersistenceService: PersistenceService {
-    private let container: NSPersistentContainer
+     let container: NSPersistentContainer
     
     var viewContext: NSManagedObjectContext {
         return container.viewContext

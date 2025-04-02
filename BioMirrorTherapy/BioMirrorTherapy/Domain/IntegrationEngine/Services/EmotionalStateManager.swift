@@ -50,6 +50,15 @@ class EmotionalStateManager {
     private var isRunning = false
     private var isPaused = false
     
+    
+    // Add this property to EmotionalStateManager class:
+    private let stateChangeSubject = PassthroughSubject<EmotionalStateChange, Never>()
+
+    // Then add the publisher property:
+    var stateChangePublisher: AnyPublisher<EmotionalStateChange, Never> {
+        return stateChangeSubject.eraseToAnyPublisher()
+    }
+    
     // MARK: - Public Properties
     
     /// Publisher for integrated emotional states

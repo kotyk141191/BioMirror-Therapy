@@ -727,6 +727,40 @@ class AdaptiveResponseGenerator: TherapeuticResponseService {
         return nil
     }
 
+    private func generateCoherenceResponse(for state: IntegratedEmotionalState, in session: TherapeuticSession) -> TherapeuticResponse {
+        // This response aims to help the child connect their facial expressions with their internal feelings
+        // when there's a significant disconnect (low coherence)
+        
+        // Determine the source of incoherence - is it emotional masking or something else?
+        let isEmotionalMasking = state.emotionalMaskingIndex > 0.6
+        
+        let verbal: String
+        let action: CharacterAction
+        
+        if isEmotionalMasking {
+            // Child's face doesn't show what they're feeling inside
+            verbal = "I notice your face and your body might be feeling different things. It's okay to show how you really feel."
+            action = CharacterAction.breathing(speed: 0.4, depth: 0.6)
+        } else {
+            // General incoherence - help connect mind and body
+            verbal = "Let's take a moment to notice how your body is feeling and connect it with your face."
+            action = CharacterAction.attention(focus: .shared)
+        }
+        
+        return TherapeuticResponse(
+            timestamp: Date(),
+            responseType: .integration,
+            characterEmotionalState: .neutral,
+            characterEmotionalIntensity: 0.5,
+            characterAction: action,
+            verbal: verbal,
+            nonverbal: "Gentle, attentive presence focused on integration",
+            interventionLevel: .moderate,
+            targetEmotionalState: state.dominantEmotion,
+            duration: 20.0
+        )
+    }
+    
     private func generateSevereGroundingResponse(for state: IntegratedEmotionalState, in session: TherapeuticSession) -> TherapeuticResponse {
         return TherapeuticResponse(
             timestamp: Date(),

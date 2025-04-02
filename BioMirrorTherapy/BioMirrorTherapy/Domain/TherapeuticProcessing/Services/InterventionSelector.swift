@@ -268,4 +268,24 @@ class InterventionSelector: TherapeuticInterventionService {
             return "I'm noticing your feelings right now."
         }
     }
+    
+    
+    private func generateCoherenceResponse(for state: IntegratedEmotionalState, in session: TherapeuticSession) -> TherapeuticResponse {
+        // Create a response focusing on connecting facial expressions with internal feelings
+        return TherapeuticResponse(
+            timestamp: Date(),
+            responseType: .integration,
+            characterEmotionalState: state.dominantEmotion,
+            characterEmotionalIntensity: state.emotionalIntensity * 0.8,
+            characterAction: CharacterAction.facialExpression(
+                emotion: state.dominantEmotion,
+                intensity: state.emotionalIntensity * 0.8
+            ),
+            verbal: "I notice your face and body might be feeling different things. Let's try to connect them.",
+            nonverbal: "Shows empathetic expression with gentle movement",
+            interventionLevel: .moderate,
+            targetEmotionalState: state.dominantEmotion,
+            duration: 15.0
+        )
+    }
 }

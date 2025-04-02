@@ -35,6 +35,7 @@ class CharacterAnimationController {
     // Animation subscribers
     private var cancellables = Set<AnyCancellable>()
     
+    private var characterNeedsUpdate = false
     // Animation timing
     private var blendDuration: TimeInterval = 0.3
     // MARK: - Initialization
@@ -90,24 +91,7 @@ class CharacterAnimationController {
     
     /// Implement a therapeutic response with the character
     /// - Parameter response: Therapeutic response to implement
-    func implementTherapeuticResponse(_ response: TherapeuticResponse) {
-        guard let entity = characterEntity else { return }
-        
-        // Set character's emotional state
-        expressEmotion(response.characterEmotionalState,
-                       intensity: response.characterEmotionalIntensity,
-                       duration: 0)
-        
-        // Perform character action if specified
-        if let action = response.characterAction {
-            performAction(action)
-        }
-        
-        // Speak verbalization if provided
-        if let verbal = response.verbal {
-            speak(verbal)
-        }
-    }
+ 
     
     /// Have the character speak text
     /// - Parameter text: Text to speak
@@ -167,7 +151,7 @@ class CharacterAnimationController {
         }
     }
     
-    private func mapMovementTypeToAnimation(_ movementType: MovementType, intensity: Float) -> CharacterAnimationType {
+    private func mapMovementTypeToAnimation(_ movementType: MovementCharacterType, intensity: Float) -> CharacterAnimationType {
         // Map movement types to character animations
         switch movementType {
         case .gentle:
@@ -273,35 +257,35 @@ class CharacterAnimationController {
     /// Perform a character action
     /// - Parameters:
     ///   - action: Action to perform
-    ///   - completion: Called when animation is complete
-    func performAction(_ action: CharacterAction, completion: (() -> Void)? = nil) {
-        switch action {
-        case .breathing(let speed, let depth):
-            animateBreathing(speed: speed, depth: depth)
-            completion?()
-            
-        case .facialExpression(let emotion, let intensity):
-            expressEmotion(emotion, intensity: intensity, duration: 0, completion: completion)
-            
-        case .bodyMovement(let type, let intensity):
-            performBodyMovement(type: type, intensity: intensity, completion: completion)
-            
-        case .vocalization(let type):
-            playVocalization(type, completion: completion)
-            
-        case .attention(let focus):
-            setAttentionFocus(focus, completion: completion)
-        }
-    }
+//    ///   - completion: Called when animation is complete
+//    func performAction(_ action: CharacterAction, completion: (() -> Void)? = nil) {
+//        switch action {
+//        case .breathing(let speed, let depth):
+//            animateBreathing(speed: speed, depth: depth)
+//            completion?()
+//            
+//        case .facialExpression(let emotion, let intensity):
+//            expressEmotion(emotion, intensity: intensity, duration: 0, completion: completion)
+//            
+//        case .bodyMovement(let type, let intensity):
+//            performBodyMovement(type: type, intensity: intensity, completion: completion)
+//            
+//        case .vocalization(let type):
+//            playVocalization(type, completion: completion)
+//            
+//        case .attention(let focus):
+//            setAttentionFocus(focus, completion: completion)
+//        }
+//    }
     
     /// Update character configuration
-    /// - Parameter configuration: New configuration
-    func updateConfiguration(_ configuration: CharacterConfiguration) {
-        self.characterConfiguration = configuration
-        
-        // Apply configuration changes to character appearance
-        updateCharacterAppearance()
-    }
+//    /// - Parameter configuration: New configuration
+//    func updateConfiguration(_ configuration: CharacterConfiguration) {
+//        self.characterConfiguration = configuration
+//        
+//        // Apply configuration changes to character appearance
+//        updateCharacterAppearance()
+//    }
     
     /// Implement a therapeutic response with the character
     /// - Parameter response: Therapeutic response to implement
@@ -314,9 +298,9 @@ class CharacterAnimationController {
         )
         
         // Perform character action if specified
-        if let action = response.characterAction {
+    let action = response.characterAction
             performAction(action)
-        }
+        
         
         // Speak verbalization if provided
         if let verbal = response.verbal {
@@ -326,42 +310,42 @@ class CharacterAnimationController {
     
     /// Have the character speak text
     /// - Parameter text: Text to speak
-    func speak(_ text: String) {
-        // Animate speaking
-        animateSpeaking(text: text)
-        
-        // Use speech synthesis to speak the text
-        let speechSynthesizer = SpeechSynthesizer.shared
-        speechSynthesizer.speak(text, voice: characterConfiguration.voiceType)
-    }
+//    func speak(_ text: String) {
+//        // Animate speaking
+//        animateSpeaking(text: text)
+//        
+//        // Use speech synthesis to speak the text
+//        let speechSynthesizer = SpeechSynthesizer.shared
+//        speechSynthesizer.speak(text, voice: characterConfiguration.voiceType)
+//    }
     
     // MARK: - Private Methods
-    
-    private func setupAREnvironment() {
-        // Configure AR session
-        let configuration = ARWorldTrackingConfiguration()
-        configuration.planeDetection = [.horizontal]
-        configuration.environmentTexturing = .automatic
-        
-        // Run the session
-        arView.session.run(configuration)
-        
-        // Add coaching overlay if needed
-        if ARWorldTrackingConfiguration.isSupported {
-            let coachingOverlay = ARCoachingOverlayView()
-            coachingOverlay.session = arView.session
-            coachingOverlay.goal = .horizontalPlane
-            coachingOverlay.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            arView.addSubview(coachingOverlay)
-        }
-    }
+//    
+//    private func setupAREnvironment() {
+//        // Configure AR session
+//        let configuration = ARWorldTrackingConfiguration()
+//        configuration.planeDetection = [.horizontal]
+//        configuration.environmentTexturing = .automatic
+//        
+//        // Run the session
+//        arView.session.run(configuration)
+//        
+//        // Add coaching overlay if needed
+//        if ARWorldTrackingConfiguration.isSupported {
+//            let coachingOverlay = ARCoachingOverlayView()
+//            coachingOverlay.session = arView.session
+//            coachingOverlay.goal = .horizontalPlane
+//            coachingOverlay.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+//            arView.addSubview(coachingOverlay)
+//        }
+//    }
     
     private func loadCharacterModel() {
         // In a real application, this would load a 3D character model from a USDZ file
         // or create it from primitives. For this example, we'll create a simple character.
         
         // Create a root entity for the character
-        let character = Entity()
+        let character = CharacterEntity()
         
         // Create body
         let bodyMesh = MeshResource.generateBox(size: 0.2)
@@ -420,6 +404,12 @@ class CharacterAnimationController {
         
         // For mirroring, return the dominant emotion with slightly reduced intensity
         return (state.dominantEmotion, state.emotionalIntensity * 0.7)
+    }
+    
+    private func stopAllAnimations() {
+        // Stop any current animations first
+        //TODO: stop allanimation need
+        
     }
     
     private func playAnimation(_ animationType: CharacterAnimationType) {
@@ -569,28 +559,7 @@ class CharacterAnimationController {
         }
     }
 
-    // Implement animateBreathing method
-    func animateBreathing(speed: Float, depth: Float) {
-        guard let bodyEntity = bodyEntity else { return }
-        
-        // Convert speed to duration (lower speed = longer duration)
-        let duration = 4.0 - (Double(speed) * 3.0)
-        
-        // Calculate breathing amplitude based on depth
-        let amplitude = 0.02 + (Double(depth) * 0.05)
-        
-        // Create animation
-        let animation = CABasicAnimation(keyPath: "position.y")
-        animation.duration = duration / 2
-        animation.fromValue = bodyEntity.position.y
-        animation.toValue = bodyEntity.position.y + amplitude
-        animation.autoreverses = true
-        animation.repeatCount = .greatestFiniteMagnitude
-        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-        
-        // Apply animation
-        bodyEntity.addAnimation(animation, forKey: "breathing")
-    }
+   
     
     private func adjustBodyPosture(for emotion: EmotionType, intensity: Float) {
         guard let bodyEntity = bodyEntity else { return }

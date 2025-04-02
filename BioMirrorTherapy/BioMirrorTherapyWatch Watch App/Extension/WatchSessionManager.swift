@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import WatchKit
+//import WatchKit
 import CoreMotion
 import WatchConnectivity
 
@@ -31,6 +31,15 @@ class WatchSessionManager {
     private var lastDataSyncTime = Date()
     
     // MARK: - Initialization
+    
+    var storedDataCount: Int {
+           // In a real implementation, this would check local storage
+           // for unsynchronized data
+           return _storedDataCount
+       }
+       
+       // Private state
+       private var _storedDataCount: Int = 0
     
     private init() {}
     

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 class AuthenticationManager {
     // MARK: - Singleton
@@ -15,6 +16,8 @@ class AuthenticationManager {
     // MARK: - Properties
     
     private let secureStorage = SecureStorageManager.shared
+    
+    private let apiClient = APIClient.shared
     
     private let accessTokenKey = "auth.accessToken"
     private let refreshTokenKey = "auth.refreshToken"

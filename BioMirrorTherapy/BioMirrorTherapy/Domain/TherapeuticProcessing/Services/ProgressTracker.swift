@@ -139,7 +139,7 @@ class ProgressTracker {
         )
         
         // Update emotional range
-        let sessionEmotionalRange = session.sessionMetrics.emotionalExpressionRange
+        let sessionEmotionalRange = session.sessionMetrics.emotionalRangeIndex
         childMetrics.emotionalExpressionRange = max(childMetrics.emotionalExpressionRange, sessionEmotionalRange)
         
         // Check for important milestones
@@ -191,7 +191,7 @@ class ProgressTracker {
             coherenceChange: coherenceChange,
             regulationCapacity: session.sessionMetrics.regulationCapacity,
             regulationChange: regulationChange,
-            emotionalRange: session.sessionMetrics.emotionalExpressionRange,
+            emotionalRange: session.sessionMetrics.emotionalRangeIndex,
             significantImprovements: significantImprovements,
             recommendedNextPhase: getRecommendedPhase()
         )

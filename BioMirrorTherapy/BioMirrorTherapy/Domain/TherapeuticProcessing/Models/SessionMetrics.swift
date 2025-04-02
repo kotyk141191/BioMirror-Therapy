@@ -83,10 +83,10 @@ let EmotionTypeMap: [EmotionType: Int] = [
     .pride: 14
 ]
 
-//enum SessionPhase {
-//    case connection    // Building initial rapport
-//    case awareness     // Increasing emotional awareness
-//    case integration   // Connecting felt and expressed emotions
-//    case regulation    // Building regulation skills
-//    case transfer      // Applying skills to daily life
-//}
+enum SessionState {
+    case connection    // Building initial rapport
+    case awareness     // Increasing emotional awareness
+    case integration   // Connecting felt and expressed emotions
+    case regulation    // Building regulation skills
+    case transfer      // Applying skills to daily life
+}

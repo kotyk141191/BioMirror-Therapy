@@ -72,6 +72,9 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				BioMirror.xcdatamodeld,
+				Extension/WatchBiometricMonitor.swift,
+				Extension/WatchSessionManager.swift,
+				WatchSessionViewModel.swift,
 			);
 			target = A11C887F2D99B862002380A8 /* BioMirrorTherapy */;
 		};

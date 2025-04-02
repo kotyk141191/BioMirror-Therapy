@@ -113,12 +113,12 @@ class TherapistRepositoryImpl: TherapistRepository {
                             EmotionTimelinePoint(id: "e4", time: "15:00", emotion: "Curious", intensity: 0.8)
                         ],
                         coherenceData: [
-                            CoherenceDataPoint(id: "c1", time: "0:00", coherence: 0.50),
-                            CoherenceDataPoint(id: "c2", time: "3:00", coherence: 0.55),
-                            CoherenceDataPoint(id: "c3", time: "6:00", coherence: 0.60),
-                            CoherenceDataPoint(id: "c4", time: "9:00", coherence: 0.65),
-                            CoherenceDataPoint(id: "c5", time: "12:00", coherence: 0.70),
-                            CoherenceDataPoint(id: "c6", time: "15:00", coherence: 0.65)
+                            CoherenceDataPoint(id: "c1", day: "0:00", coherence: 0.50),
+                            CoherenceDataPoint(id: "c2", day: "3:00", coherence: 0.55),
+                            CoherenceDataPoint(id: "c3", day: "6:00", coherence: 0.60),
+                            CoherenceDataPoint(id: "c4", day: "9:00", coherence: 0.65),
+                            CoherenceDataPoint(id: "c5", day: "12:00", coherence: 0.70),
+                            CoherenceDataPoint(id: "c6", day: "15:00", coherence: 0.65)
                         ]
                     ),
                     SessionData(

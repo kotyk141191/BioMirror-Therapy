@@ -21,7 +21,7 @@ enum CharacterAction {
     case breathing(speed: Float, depth: Float)
     case grounding(type: GroundingType)
     case attention(focus: AttentionFocus)
-    case bodyMovement(type: MovementType, intensity: Float)
+    case bodyMovement(type: MovementCharacterType, intensity: Float)
     
     enum GroundingType {
         case tactile
@@ -34,15 +34,17 @@ enum CharacterAction {
         case averted
         case shared
     }
-    
-    enum MovementType {
-        case gentle
-        case energetic
-        case rhythmic
-        case protective
-    }
 }
 
+
+enum MovementCharacterType {
+    case gentle
+    case energetic
+    case rhythmic
+    case protective
+    case playful
+    case freeze
+}
 
 import RealityKit
 import SwiftUI
@@ -69,7 +71,7 @@ class CharacterEntity: Entity {
     
     // MARK: - Initialization
     
-    override init() {
+    required init() {
         super.init()
         setupCharacter()
     }
