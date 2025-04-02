@@ -12,9 +12,11 @@ protocol EmotionalIntegrationService {
     // State
     var currentIntegratedState: IntegratedEmotionalState? { get }
     var integratedStatePublisher: AnyPublisher<IntegratedEmotionalState, Never> { get }
+    var stateChangePublisher: AnyPublisher<EmotionalStateChange, Never> { get }
     
     // Control
     func startIntegration()
+    func startIntegration(sessionId: String?)
     func stopIntegration()
     
     // Analysis

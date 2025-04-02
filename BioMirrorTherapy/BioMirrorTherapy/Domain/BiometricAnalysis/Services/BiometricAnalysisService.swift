@@ -60,8 +60,8 @@ struct BiometricAnalysisOptions {
     )
 }
 
-//enum SamplingFrequency {
-//    case low   // 1 Hz
-//    case medium // 5 Hz
-//    case high  // 10+ Hz
-//}
+enum SamplingFrequency {
+    case low   // 1 Hz
+    case medium // 5 Hz
+    case high  // 10+ Hz
+}

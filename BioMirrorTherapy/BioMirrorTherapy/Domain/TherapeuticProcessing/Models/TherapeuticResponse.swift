@@ -12,7 +12,7 @@ struct TherapeuticResponse {
     let responseType: TherapeuticResponseType
     let characterEmotionalState: EmotionType
     let characterEmotionalIntensity: Float
-    let characterAction: CharacterAction?
+    let characterAction: CharacterAction
     let verbal: String?
     let nonverbal: String?
     let interventionLevel: InterventionLevel
@@ -31,41 +31,9 @@ enum TherapeuticResponseType {
     case transition // Help move between activities
 }
 
-enum CharacterAction {
-    case breathing(speed: Float, depth: Float)
-    case facialExpression(emotion: EmotionType, intensity: Float)
-    case bodyMovement(type: MovementType, intensity: Float)
-    case vocalization(type: VocalizationType)
-    case attention(focus: AttentionFocus)
-}
-
-enum MovementType {
-    case gentle
-    case energetic
-    case protective
-    case playful
-    case freeze
-    case rhythmic
-}
-
-enum VocalizationType {
-    case laugh
-    case sigh
-    case hum
-    case gasp
-}
-
-enum AttentionFocus {
-    case direct // Looking at child
-    case away // Looking away
-    case shared // Looking at same thing as child
-    case scanning // Looking around
-}
-
 enum InterventionLevel {
     case minimal
     case moderate
     case significant
     case intensive
 }
-

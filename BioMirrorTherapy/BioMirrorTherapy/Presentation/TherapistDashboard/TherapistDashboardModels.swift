@@ -86,63 +86,63 @@ struct ChartDataPoint: Identifiable {
     let value: Double
 }
 
-struct SessionData: Identifiable {
-    let id: String
-    let date: Date
-    let duration: TimeInterval
-    let phase: Int
-    let phaseName: String
-    let completionStatus: String
-    let coherenceIndex: Float
-    let emotionsExpressed: [String]
-    let dissociationEpisodes: Int
-    let dissociationDuration: TimeInterval
-    let regulationEvents: Int
-    let avgRegulationTime: TimeInterval
-    let therapistNotes: String?
-    let emotionalTimeline: [EmotionTimelinePoint]
-    let coherenceData: [CoherenceDataPoint]
-    
-    var formattedDate: String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .short
-        return formatter.string(from: date)
-    }
-    
-    var formattedDuration: String {
-        let minutes = Int(duration / 60)
-        return "\(minutes) min"
-    }
-    
-    var formattedRegulationTime: String {
-        let seconds = Int(avgRegulationTime)
-        
-        if seconds >= 60 {
-            let minutes = seconds / 60
-            let remainingSeconds = seconds % 60
-            return "\(minutes)m \(remainingSeconds)s"
-        } else {
-            return "\(seconds)s"
-        }
-    }
-    
-    var statusColor: Color {
-        switch completionStatus {
-        case "Completed":
-            return .green
-        case "Interrupted":
-            return .orange
-        case "Terminated":
-            return .red
-        default:
-            return .gray
-        }
-    }
-}
-
-struct CoherenceDataPoint: Identifiable {
-    let id: String
-    let time: String
-    let coherence: Double
-}
+//struct SessionData: Identifiable {
+//    let id: String
+//    let date: Date
+//    let duration: TimeInterval
+//    let phase: Int
+//    let phaseName: String
+//    let completionStatus: String
+//    let coherenceIndex: Float
+//    let emotionsExpressed: [String]
+//    let dissociationEpisodes: Int
+//    let dissociationDuration: TimeInterval
+//    let regulationEvents: Int
+//    let avgRegulationTime: TimeInterval
+//    let therapistNotes: String?
+//    let emotionalTimeline: [EmotionTimelinePoint]
+//    let coherenceData: [CoherenceDataPoint]
+//    
+//    var formattedDate: String {
+//        let formatter = DateFormatter()
+//        formatter.dateStyle = .medium
+//        formatter.timeStyle = .short
+//        return formatter.string(from: date)
+//    }
+//    
+//    var formattedDuration: String {
+//        let minutes = Int(duration / 60)
+//        return "\(minutes) min"
+//    }
+//    
+//    var formattedRegulationTime: String {
+//        let seconds = Int(avgRegulationTime)
+//        
+//        if seconds >= 60 {
+//            let minutes = seconds / 60
+//            let remainingSeconds = seconds % 60
+//            return "\(minutes)m \(remainingSeconds)s"
+//        } else {
+//            return "\(seconds)s"
+//        }
+//    }
+//    
+//    var statusColor: Color {
+//        switch completionStatus {
+//        case "Completed":
+//            return .green
+//        case "Interrupted":
+//            return .orange
+//        case "Terminated":
+//            return .red
+//        default:
+//            return .gray
+//        }
+//    }
+//}
+//
+//struct CoherenceDataPoint: Identifiable {
+//    let id: String
+//    let time: String
+//    let coherence: Double
+//}

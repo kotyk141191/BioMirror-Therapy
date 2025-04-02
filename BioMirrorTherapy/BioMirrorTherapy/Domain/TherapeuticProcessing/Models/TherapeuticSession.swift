@@ -116,7 +116,8 @@ class TherapeuticSession {
     }
     
     func advancePhase(to newPhase: SessionPhase) {
-        self.sessionPhase = newPhase
+        // This method is simply a synonym for advanceToPhase with different parameter names
+        sessionPhase = newPhase
     }
   
     

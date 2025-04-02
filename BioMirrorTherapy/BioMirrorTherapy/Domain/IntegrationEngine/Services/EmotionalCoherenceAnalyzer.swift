@@ -8,6 +8,8 @@
 import Foundation
 import Combine
 
+// Forward declaration to resolve circular reference
+// The actual implementation
 class EmotionalCoherenceAnalyzer: EmotionalIntegrationService {
     // MARK: - Properties
     

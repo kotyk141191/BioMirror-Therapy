@@ -42,24 +42,26 @@ import Foundation
 
 //// Session metrics to track progress
 struct SessionMetrics {
+    // Basic metrics
     var sessionDuration: TimeInterval = 0
     var averageCoherenceIndex: Float = 0
     var emotionsExpressed: Set<EmotionRecord> = []
-    var emotionalExpressionRange: Float = 0
+    var emotionalRangeIndex: Float = 0
+    
+    // Performance metrics
     var regulationCapacity: Float = 0
     var regulationImprovement: Float = 0
-    var totalDissociationTime: TimeInterval = 0
-    var dissociationEpisodeCount: Int = 0
     var interactionEngagement: Float = 0
     
-    // Regulation
-       var peakArousal: Float = 0
-       var timeOfPeakArousal: Date?
-       var regulationRecoveryTime: TimeInterval = 0
+    // Regulation metrics
+    var peakArousal: Float = 0
+    var timeOfPeakArousal: Date?
+    var regulationRecoveryTime: TimeInterval = 0
     
-    // Dissociation
-        var dissociationEpisodes: Int = 0
-        var percentageTimeInDissociation: Float = 0
+    // Dissociation metrics
+    var totalDissociationTime: TimeInterval = 0
+    var dissociationEpisodeCount: Int = 0
+    var percentageTimeInDissociation: Float = 0
 }
 
 // Map EmotionType to integers for set storage

@@ -8,6 +8,7 @@
 import Foundation
 import ARKit
 import CoreMotion
+import UIKit
 
 enum DeviceCapabilityError: Error {
     case lidarNotAvailable

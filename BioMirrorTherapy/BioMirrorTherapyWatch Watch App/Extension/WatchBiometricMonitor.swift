@@ -117,16 +117,16 @@ class WatchBiometricMonitor {
         }
         
         // Configure query to update with new samples
-        heartRateQuery?.updateHandler = { [weak self] query, samples, newAnchor, error in
-            guard let self = self else { return }
-            
-            if let error = error {
-                print("Heart rate update error: \(error)")
-                return
-            }
-            
-            self.processHeartRateSamples(samples)
-        }
+//        heartRateQuery?.updateHandler = { [weak self] query, samples, newAnchor, error in
+//            guard let self = self else { return }
+//            
+//            if let error = error {
+//                print("Heart rate update error: \(error)")
+//                return
+//            }
+//            
+//            self.processHeartRateSamples(samples)
+//        }
         
         // Execute the query
         if let query = heartRateQuery {

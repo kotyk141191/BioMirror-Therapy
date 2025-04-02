@@ -242,6 +242,7 @@ import Foundation
 import Combine
 import ARKit
 import RealityKit
+import simd
 
 class ChildSessionViewModel: ObservableObject {
     // MARK: - Published Properties
@@ -624,9 +625,10 @@ extension ChildSessionViewModel {
                 
                 // Find the character entity (in a real app, you would have a reference to it)
                 if let characterEntity = entities.first(where: { $0 is ModelEntity }) as? ModelEntity {
-                    // Set character expression
+                    // Convert the emotion type to a character action
+                    // We're using our CharacterAction type here, not TherapeuticCharacterAction
                     let facialExpression = CharacterAction.facialExpression(
-                        emotion: characterState.emotion,
+                        emotion: characterState.emotion, 
                         intensity: characterState.intensity
                     )
                     
@@ -652,12 +654,52 @@ extension ChildSessionViewModel {
                         // Apply scale animation
                         characterEntity.scale = scaleFactor
                         
-                    default:
-                        break
+                    case .breathing(let speed, let depth):
+                        // Apply breathing animation
+                        let breathingAnimation = Transform(
+                            scale: SIMD3<Float>(1.0, 1.0 + Float(depth * 0.05), 1.0),
+                            rotation: simd_quatf(),
+                            translation: SIMD3<Float>(0, 0, 0)
+                        )
+                        
+                        // Create animation with duration based on speed
+                        let duration = 1.0 / Double(speed)
+                        let animation = FromToByAnimation(
+                            name: "breathing",
+                            from: characterEntity.transform,
+                            to: breathingAnimation,
+                            duration: duration,
+                            timing: .easeInOut,
+                            autoreverses: true,
+                            repeats: true
+                        )
+                        
+                        // Apply the animation
+                        characterEntity.move(with: animation, relativeTo: characterEntity.parent)
+                        
+                    case .grounding(let type):
+                        // Apply grounding animation based on type
+                        switch type {
+                        case .tactile:
+                            // Show character touching various surfaces
+                            break
+                        case .visual:
+                            // Show character looking around
+                            break
+                        case .auditory:
+                            // Show character listening
+                            break
+                        }
                     }
                 }
             }
         }
+    }
+    
+    private func updateCharacterConfiguration(_ configuration: CharacterConfiguration) {
+        // In a real app, this would update the character's appearance and behavior
+        // based on configuration settings
+        print("Updated character with configuration: \(configuration)")
     }
     
     private func determineCharacterState(from state: IntegratedEmotionalState) -> (emotion: EmotionType, intensity: Float)? {

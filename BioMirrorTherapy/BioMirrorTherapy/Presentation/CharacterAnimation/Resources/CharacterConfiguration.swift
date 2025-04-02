@@ -26,13 +26,23 @@ struct CharacterConfiguration {
     )
 }
 
-//enum CharacterType: String {
-//    case friendly
-//    case calm
-//    case playful
-//    case wise
-//    case quirky
-//}
+enum CharacterType: String {
+    case friendly
+    case protective
+    case calm
+    case playful
+    case wise
+    
+    var defaultName: String {
+        switch self {
+        case .friendly: return "Buddy"
+        case .protective: return "Guardian"
+        case .calm: return "Serene"
+        case .playful: return "Sparkle"
+        case .wise: return "Sage"
+        }
+    }
+}
 
 enum VoiceType: String {
     case neutral
