@@ -25,7 +25,7 @@ class EmotionalStateManager {
     private var facialStateSubscription: AnyCancellable?
     private var biometricStateSubscription: AnyCancellable?
     
-    private var latestFacialState: EmotionalState?
+    private var latestFacialState: FacialEmotionalState?
     private var latestPhysiologicalState: PhysiologicalState?
     
     // Internal timer for state integration
@@ -281,7 +281,7 @@ class EmotionalStateManager {
         integratedStateSubject.send(integratedState)
     }
     
-    private func createIntegratedState(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> IntegratedEmotionalState {
+    private func createIntegratedState(emotionalState: FacialEmotionalState, physiologicalState: PhysiologicalState) -> IntegratedEmotionalState {
         // Calculate coherence index - how well facial expressions match physiological state
         let coherenceIndex = coherenceAnalyzer.calculateCoherenceIndex(emotionalState: emotionalState, physiologicalState: physiologicalState)
         
@@ -318,7 +318,7 @@ class EmotionalStateManager {
         )
     }
     
-    private func determineDominantEmotion(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> EmotionType {
+    private func determineDominantEmotion(emotionalState: FacialEmotionalState, physiologicalState: PhysiologicalState) -> EmotionType {
         // In most cases, use the facial emotion as the primary indicator
         if emotionalState.confidence > 0.7 && emotionalState.primaryIntensity > 0.5 {
             return emotionalState.primaryEmotion
@@ -349,7 +349,7 @@ class EmotionalStateManager {
         return emotionalState.primaryEmotion
     }
     
-    private func calculateEmotionalIntensity(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> Float {
+    private func calculateEmotionalIntensity(emotionalState: FacialEmotionalState, physiologicalState: PhysiologicalState) -> Float {
         // Blend facial intensity with physiological arousal
         let facialIntensity = emotionalState.primaryIntensity
         let physiologicalIntensity = physiologicalState.arousalLevel
@@ -366,7 +366,7 @@ class EmotionalStateManager {
         }
     }
     
-    private func determineRegulationState(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> RegulationState {
+    private func determineRegulationState(emotionalState: FacialEmotionalState, physiologicalState: PhysiologicalState) -> RegulationState {
         // Assess regulation based on coherence and physiological indicators
         let coherence = coherenceAnalyzer.calculateCoherenceIndex(emotionalState: emotionalState, physiologicalState: physiologicalState)
         let arousal = physiologicalState.arousalLevel
@@ -398,7 +398,7 @@ class EmotionalStateManager {
         return .regulated
     }
     
-    private func calculateDataQuality(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> DataQuality {
+    private func calculateDataQuality(emotionalState: FacialEmotionalState, physiologicalState: PhysiologicalState) -> DataQuality {
         // Combine face detection quality and physiological data quality
         let faceQuality = emotionalState.faceDetectionQuality
         let bioQuality = physiologicalState.qualityIndex

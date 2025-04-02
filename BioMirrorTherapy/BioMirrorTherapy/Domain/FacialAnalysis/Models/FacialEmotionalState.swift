@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct EmotionalState {
+struct FacialEmotionalState {
     let timestamp: Date
     let primaryEmotion: EmotionType
     let primaryIntensity: Float // 0.0 to 1.0

@@ -9,7 +9,7 @@ import Foundation
 
 struct IntegratedEmotionalState {
     let timestamp: Date
-    let emotionalState: EmotionalState
+    let emotionalState: FacialEmotionalState
     let physiologicalState: PhysiologicalState
     
     // Coherence metrics

@@ -15,10 +15,10 @@ class LiDARFacialAnalysisService: NSObject, FacialAnalysisService {
     
     private var arSession: ARSession?
     private let facialAnalysisQueue = DispatchQueue(label: "com.biomirror.facialanalysis", qos: .userInteractive)
-    private let emotionalStateSubject = PassthroughSubject<EmotionalState, Never>()
+    private let emotionalStateSubject = PassthroughSubject<FacialEmotionalState, Never>()
     private let statusSubject = PassthroughSubject<FacialAnalysisStatus, Never>()
     
-    private var _currentEmotionalState: EmotionalState?
+    private var _currentEmotionalState: FacialEmotionalState?
     private var _status: FacialAnalysisStatus = .notStarted
     private var _isRunning = false
     
@@ -40,11 +40,11 @@ class LiDARFacialAnalysisService: NSObject, FacialAnalysisService {
         return statusSubject.eraseToAnyPublisher()
     }
     
-    var currentEmotionalState: EmotionalState? {
+    var currentEmotionalState: FacialEmotionalState? {
         return _currentEmotionalState
     }
     
-    var emotionalStatePublisher: AnyPublisher<EmotionalState, Never> {
+    var emotionalStatePublisher: AnyPublisher<FacialEmotionalState, Never> {
         return emotionalStateSubject.eraseToAnyPublisher()
     }
     
@@ -153,7 +153,7 @@ class LiDARFacialAnalysisService: NSObject, FacialAnalysisService {
     
     // MARK: - Emotion Detection
     
-    private func processBlendShapes(_ blendShapes: [ARFaceAnchor.BlendShapeLocation: NSNumber], anchor: ARFaceAnchor) -> EmotionalState {
+    private func processBlendShapes(_ blendShapes: [ARFaceAnchor.BlendShapeLocation: NSNumber], anchor: ARFaceAnchor) -> FacialEmotionalState {
         // Store blend shapes in history for micro-expression detection
         blendShapeHistory.append(blendShapes)
         if blendShapeHistory.count > historySize {
@@ -300,7 +300,7 @@ class LiDARFacialAnalysisService: NSObject, FacialAnalysisService {
         }
         
         // Create emotional state
-        return EmotionalState(
+        return FacialEmotionalState(
             timestamp: Date(),
             primaryEmotion: primaryEmotion,
             primaryIntensity: primaryIntensity,
@@ -559,7 +559,7 @@ extension LiDARFacialAnalysisService: ARSessionDelegate {
                 }
             } else if self.faceAnchors.isEmpty {
                 // No face detected
-                let noFaceState = EmotionalState(
+                let noFaceState = FacialEmotionalState(
                     timestamp: Date(),
                     primaryEmotion: .neutral,
                     primaryIntensity: 0.0,

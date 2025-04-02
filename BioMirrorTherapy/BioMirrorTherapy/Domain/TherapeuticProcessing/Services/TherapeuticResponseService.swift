@@ -37,18 +37,18 @@ struct ResponsePreferences {
     )
 }
 
-enum CharacterType {
-    case friendly
-    case calm
-    case energetic
-    case nurturing
-    case playful
-}
-
-enum GroundingTechnique {
-    case breathing
-    case sensory
-    case movement
-    case cognitive
-    case naming
-}
+//enum CharacterType {
+//    case friendly
+//    case calm
+//    case energetic
+//    case nurturing
+//    case playful
+//}
+//
+//enum GroundingTechnique {
+//    case breathing
+//    case sensory
+//    case movement
+//    case cognitive
+//    case naming
+//}

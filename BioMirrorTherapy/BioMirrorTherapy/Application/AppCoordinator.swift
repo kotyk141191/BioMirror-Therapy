@@ -136,6 +136,8 @@ extension AppCoordinator: OnboardingCoordinatorDelegate {
             navigateToParentDashboard()
         case .therapist:
             navigateToTherapistDashboard()
+        case .none:
+            break
         }
     }
 }

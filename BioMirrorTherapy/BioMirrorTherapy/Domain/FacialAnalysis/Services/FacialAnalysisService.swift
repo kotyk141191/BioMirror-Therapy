@@ -16,8 +16,8 @@ protocol FacialAnalysisService {
     var statusPublisher: AnyPublisher<FacialAnalysisStatus, Never> { get }
     
     // Emotional state
-    var currentEmotionalState: EmotionalState? { get }
-    var emotionalStatePublisher: AnyPublisher<EmotionalState, Never> { get }
+    var currentEmotionalState: FacialEmotionalState? { get }
+    var emotionalStatePublisher: AnyPublisher<FacialEmotionalState, Never> { get }
     
     // Control
     func startAnalysis() throws
