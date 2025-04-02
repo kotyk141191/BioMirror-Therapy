@@ -124,4 +124,35 @@ class AuthenticationManager {
         
         return nil
     }
+    
+    
+    // Add this to AuthenticationManager.swift
+    func authenticateUser(username: String, password: String) -> AnyPublisher<Bool, Error> {
+        // For now, use the API client to authenticate
+        return apiClient.login(username: username, password: password)
+            .map { result -> Bool in
+                self.setTokens(accessToken: result.accessToken, refreshToken: result.refreshToken)
+                return true
+            }
+            .eraseToAnyPublisher()
+    }
+
+    func checkAuthentication() -> Bool {
+        return isAuthenticated
+    }
+
+    func getUserType() -> UserType {
+        guard let userId = userId else { return .none }
+        
+        // In a real implementation, this would be determined from the token or API
+        if userId.hasPrefix("child-") {
+            return .child
+        } else if userId.hasPrefix("parent-") {
+            return .parent
+        } else if userId.hasPrefix("therapist-") {
+            return .therapist
+        } else {
+            return .none
+        }
+    }
 }

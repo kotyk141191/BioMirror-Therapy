@@ -635,4 +635,110 @@ class AdaptiveResponseGenerator: TherapeuticResponseService {
         // Assuming states are collected at roughly 5Hz (0.2 seconds apart)
         return TimeInterval(consecutiveCount) * 0.2
     }
+    
+    // Add this method to AdaptiveResponseGenerator
+    private func generateGroundingResponse(for dissociationStatus: DissociationStatus, in session: TherapeuticSession) -> TherapeuticResponse {
+        // Generate response based on dissociation severity
+        let severity: DissociationSeverity
+        let intensity: Float
+        
+        switch dissociationStatus {
+        case .active(let activeSeverity, _, let activeIntensity):
+            severity = activeSeverity
+            intensity = activeIntensity
+        case .recent(let recentSeverity, _, let recentIntensity):
+            severity = recentSeverity
+            intensity = recentIntensity
+        case .none:
+            return createGenericGroundingResponse(in: session)
+        }
+        
+        // Select grounding technique based on severity
+        let technique = selectGroundingTechnique(for: severity, intensity: intensity)
+        
+        // Create appropriate verbal response
+        let verbal: String
+        switch technique {
+        case .breathing:
+            verbal = "Let's take a deep breath together. Breathe in... and out..."
+        case .sensory:
+            verbal = "Can you notice something you can see right now? What colors do you notice?"
+        case .movement:
+            verbal = "Let's gently move our hands. Can you wiggle your fingers?"
+        case .cognitive:
+            verbal = "Let's count together. One, two, three..."
+        case .naming:
+            verbal = "Can you name something you can see that is blue?"
+        }
+        
+        // Create appropriate character action
+        let action: CharacterAction
+        switch technique {
+        case .breathing:
+            action = .breathing(speed: 0.3, depth: 0.8)
+        case .sensory, .naming:
+            action = .attention(focus: .direct)
+        case .movement:
+            action = .bodyMovement(type: .gentle, intensity: 0.6)
+        case .cognitive:
+            action = .facialExpression(emotion: .interest, intensity: 0.7)
+        }
+        
+        // Set intervention level based on severity
+        let interventionLevel: InterventionLevel
+        switch severity {
+        case .potential, .mild:
+            interventionLevel = .minimal
+        case .moderate:
+            interventionLevel = .moderate
+        case .severe:
+            interventionLevel = .intensive
+        }
+        
+        return TherapeuticResponse(
+            timestamp: Date(),
+            responseType: .grounding,
+            characterEmotionalState: .neutral,
+            characterEmotionalIntensity: 0.3,
+            characterAction: action,
+            verbal: verbal,
+            nonverbal: "Maintains calm presence with grounding focus",
+            interventionLevel: interventionLevel,
+            targetEmotionalState: .neutral,
+            duration: 15.0
+        )
+    }
+
+    // Add methods to implement safety protocols
+    private func implementSafetyProtocols(_ integratedState: IntegratedEmotionalState, in session: TherapeuticSession) -> TherapeuticResponse? {
+        // Check for safety issues
+        if integratedState.dissociationIndex > 0.8 {
+            return generateSevereGroundingResponse(for: integratedState, in: session)
+        }
+        
+        if integratedState.arousalLevel > 0.9 && integratedState.emotionalIntensity > 0.8 {
+            return generateRegulationResponse(for: integratedState, in: session)
+        }
+        
+        if integratedState.coherenceIndex < 0.2 {
+            return generateCoherenceResponse(for: integratedState, in: session)
+        }
+        
+        return nil
+    }
+
+    private func generateSevereGroundingResponse(for state: IntegratedEmotionalState, in session: TherapeuticSession) -> TherapeuticResponse {
+        return TherapeuticResponse(
+            timestamp: Date(),
+            responseType: .grounding,
+            characterEmotionalState: .neutral,
+            characterEmotionalIntensity: 0.2,
+            characterAction: .breathing(speed: 0.2, depth: 0.9),
+            verbal: "Let's take a moment to notice what's around us. Can you feel the ground beneath you?",
+            nonverbal: "Calm, steady presence with slow movements",
+            interventionLevel: .intensive,
+            targetEmotionalState: .neutral,
+            duration: 30.0
+        )
+    }
 }

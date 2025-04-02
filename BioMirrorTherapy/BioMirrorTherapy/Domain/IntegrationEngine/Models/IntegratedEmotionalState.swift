@@ -47,10 +47,10 @@ enum RegulationState {
     case severeDysregulation
 }
 
-enum DataQuality {
-    case excellent
-    case good
-    case fair
-    case poor
-    case invalid
+enum DataQuality: String {
+    case excellent = "Excellent"
+    case good = "Good"
+    case fair = "Fair"
+    case poor = "Poor"
+    case invalid = "Invalid"
 }

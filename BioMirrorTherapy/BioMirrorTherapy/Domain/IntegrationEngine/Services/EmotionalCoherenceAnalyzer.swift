@@ -411,6 +411,84 @@ class EmotionalCoherenceAnalyzer: EmotionalIntegrationService {
         }
     }
     
+    func analyzeDissociationPatterns(_ state: IntegratedEmotionalState) -> DissociationPattern {
+           // Analyze patterns of dissociation over time
+           let dissociationIndex = state.dissociationIndex
+           let arousal = state.arousalLevel
+           let coherence = state.coherenceIndex
+           
+           if dissociationIndex > 0.8 {
+               return .severe
+           } else if dissociationIndex > 0.6 {
+               if arousal < 0.3 {
+                   return .hypoarousal
+               } else {
+                   return .moderate
+               }
+           } else if dissociationIndex > 0.4 {
+               if coherence < 0.3 {
+                   return .fluctuating
+               } else {
+                   return .mild
+               }
+           } else {
+               return .none
+           }
+       }
+    
+    func detectEmotionalMasking(_ state: IntegratedEmotionalState) -> Float {
+            // Advanced detection of emotional masking
+            let facialEmotion = state.emotionalState.primaryEmotion
+            let facialIntensity = state.emotionalState.primaryIntensity
+            let physiologicalArousal = state.physiologicalState.arousalLevel
+            
+            // Calculate discrepancy between facial expression and physiological state
+            var maskingScore: Float = 0.0
+            
+            // Neutral face with high arousal strongly suggests masking
+            if facialEmotion == .neutral && physiologicalArousal > 0.7 {
+                maskingScore += 0.8
+            }
+            
+            // Positive facial expression with contradictory physiological signs
+            if (facialEmotion == .happiness || facialEmotion == .surprise) &&
+               state.physiologicalState.hrvMetrics.heartRateVariability < 30 &&
+               state.physiologicalState.motionMetrics.freezeIndex > 0.5 {
+                maskingScore += 0.7
+            }
+            
+            // Low intensity with high arousal suggests masking
+            if facialIntensity < 0.4 && physiologicalArousal > 0.6 {
+                maskingScore += 0.5
+            }
+            
+            return min(1.0, maskingScore)
+        }
+    
+    func buildEmotionalMap(_ history: [IntegratedEmotionalState]) -> EmotionalMap {
+            // Create emotional mapping from history
+            var emotionalMap = EmotionalMap()
+            
+            for state in history {
+                // Record emotion transitions
+                if let previousState = history.last {
+                    let transition = EmotionalTransition(
+                        from: previousState.dominantEmotion,
+                        to: state.dominantEmotion,
+                        coherenceChange: state.coherenceIndex - previousState.coherenceIndex,
+                        arousalChange: state.arousalLevel - previousState.arousalLevel,
+                        timestamp: state.timestamp
+                    )
+                    emotionalMap.transitions.append(transition)
+                }
+                
+                // Record emotional states
+                emotionalMap.recordState(state)
+            }
+            
+            return emotionalMap
+        }
+    
 //    private func calculateEmotionalMaskingIndex(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> Float {
 //        // Base masking score
 //        var masking: Float = 0.0
@@ -447,45 +525,45 @@ class EmotionalCoherenceAnalyzer: EmotionalIntegrationService {
 //        return min(1.0, masking)
 //    }
     
-    private func calculateDissociationIndex(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> Float {
-        // Dissociation indicators include:
-        // 1. Low facial expressivity (neutral, flat affect)
-        // 2. Freeze response in motion metrics
-        // 3. Disconnection between face and physiological response
-        
-        var dissociationScore: Float = 0.0
-        
-        // Check for flat affect (low intensity neutral face)
-        if emotionalState.primaryEmotion == .neutral && emotionalState.primaryIntensity < 0.3 {
-            dissociationScore += 0.4
-        }
-        
-        // Check for freeze response
-        if physiologicalState.motionMetrics.freezeIndex > 0.7 {
-            dissociationScore += 0.4
-        }
-        
-        // Check for characteristic dissociative HRV pattern
-        // (in a real implementation, this would use more sophisticated analysis)
-        if physiologicalState.hrvMetrics.heartRateVariability < 20 &&
-           physiologicalState.hrvMetrics.heartRate < 70 {
-            dissociationScore += 0.3
-        }
-        
-        // Check for lack of micro-expressions
-        if emotionalState.microExpressions.isEmpty && emotionalState.confidence > 0.7 {
-            dissociationScore += 0.2
-        }
-        
-        // Factor in coherence (low coherence can indicate dissociation)
-        let coherence = calculateCoherenceIndex(emotionalState: emotionalState, physiologicalState: physiologicalState)
-        if coherence < 0.3 {
-            dissociationScore += 0.3 * (1.0 - coherence)
-        }
-        
-        return min(1.0, dissociationScore)
-    }
-    
+//    private func calculateDissociationIndex(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> Float {
+//        // Dissociation indicators include:
+//        // 1. Low facial expressivity (neutral, flat affect)
+//        // 2. Freeze response in motion metrics
+//        // 3. Disconnection between face and physiological response
+//        
+//        var dissociationScore: Float = 0.0
+//        
+//        // Check for flat affect (low intensity neutral face)
+//        if emotionalState.primaryEmotion == .neutral && emotionalState.primaryIntensity < 0.3 {
+//            dissociationScore += 0.4
+//        }
+//        
+//        // Check for freeze response
+//        if physiologicalState.motionMetrics.freezeIndex > 0.7 {
+//            dissociationScore += 0.4
+//        }
+//        
+//        // Check for characteristic dissociative HRV pattern
+//        // (in a real implementation, this would use more sophisticated analysis)
+//        if physiologicalState.hrvMetrics.heartRateVariability < 20 &&
+//           physiologicalState.hrvMetrics.heartRate < 70 {
+//            dissociationScore += 0.3
+//        }
+//        
+//        // Check for lack of micro-expressions
+//        if emotionalState.microExpressions.isEmpty && emotionalState.confidence > 0.7 {
+//            dissociationScore += 0.2
+//        }
+//        
+//        // Factor in coherence (low coherence can indicate dissociation)
+//        let coherence = calculateCoherenceIndex(emotionalState: emotionalState, physiologicalState: physiologicalState)
+//        if coherence < 0.3 {
+//            dissociationScore += 0.3 * (1.0 - coherence)
+//        }
+//        
+//        return min(1.0, dissociationScore)
+//    }
+//    
     private func determineDominantEmotion(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> EmotionType {
         // In most cases, use the facial emotion as the primary indicator
         if emotionalState.confidence > 0.7 && emotionalState.primaryIntensity > 0.5 {
@@ -649,4 +727,42 @@ struct EmotionalStateChange {
     let dissociationChanged: Bool
     let regulationChanged: Bool
     let isSignificant: Bool
+}
+
+
+struct EmotionalMap {
+    var emotions: [EmotionType: Int] = [:]
+    var transitions: [EmotionalTransition] = []
+    var coherenceAverage: Float = 0.0
+    var coherencePattern: CoherencePattern = .unknown
+    var dissociationFrequency: Float = 0.0
+    
+    mutating func recordState(_ state: IntegratedEmotionalState) {
+        emotions[state.dominantEmotion, default: 0] += 1
+    }
+}
+
+struct EmotionalTransition {
+    let from: EmotionType
+    let to: EmotionType
+    let coherenceChange: Float
+    let arousalChange: Float
+    let timestamp: Date
+}
+
+enum DissociationPattern {
+    case none
+    case mild
+    case moderate
+    case severe
+    case fluctuating
+    case hypoarousal
+}
+
+enum CoherencePattern {
+    case unknown
+    case stable
+    case improving
+    case declining
+    case volatile
 }

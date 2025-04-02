@@ -7,6 +7,7 @@
 
 import Foundation
 import Security
+import Combine
 
 class SecureStorageManager {
     // MARK: - Singleton
@@ -158,6 +159,35 @@ class SecureStorageManager {
         let status = SecItemCopyMatching(query as CFDictionary, nil)
         return status == errSecSuccess
     }
+    
+    // Add method to securely store session data
+    func saveSession(_ session: TherapeuticSession) throws {
+        let encoder = JSONEncoder()
+        let data = try encoder.encode(session)
+        try saveData(data, forKey: "session-\(session.id.uuidString)")
+    }
+
+    func retrieveSession(id: UUID) throws -> TherapeuticSession? {
+        let key = "session-\(id.uuidString)"
+        guard itemExists(forKey: key) else { return nil }
+        
+        let data = try getData(forKey: key)
+        let decoder = JSONDecoder()
+        return try decoder.decode(TherapeuticSession.self, from: data)
+    }
+
+    // Data/RemoteServices/MLModel/MLModelManager.swift
+
+    // Add method to fetch updated ML models for emotion detection
+    func updateEmotionDetectionModel() -> AnyPublisher<ModelUpdateResult, Error> {
+        return forceUpdate("EmotionClassifier")
+    }
+
+    func updateDissociationDetectionModel() -> AnyPublisher<ModelUpdateResult, Error> {
+        return forceUpdate("DissociationDetector")
+    }
+    
+    
 }
 
 // MARK: - Convenience Extension for Coding Objects

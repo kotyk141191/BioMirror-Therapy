@@ -8,6 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		A14F123F2D99E1BF0095D042 /* BioMirrorTherapyWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = A14F12322D99E1BE0095D042 /* BioMirrorTherapyWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A1B62C202D9D1E1E00DE3F11 /* EmotionalState+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B62C1C2D9D1E1E00DE3F11 /* EmotionalState+CoreDataClass.swift */; };
+		A1B62C212D9D1E1E00DE3F11 /* EmotionalState+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B62C1D2D9D1E1E00DE3F11 /* EmotionalState+CoreDataProperties.swift */; };
+		A1B62C222D9D1E1E00DE3F11 /* Session+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B62C1E2D9D1E1E00DE3F11 /* Session+CoreDataClass.swift */; };
+		A1B62C232D9D1E1E00DE3F11 /* Session+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B62C1F2D9D1E1E00DE3F11 /* Session+CoreDataProperties.swift */; };
+		A1B62C242D9D1E1E00DE3F11 /* EmotionalState+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B62C1C2D9D1E1E00DE3F11 /* EmotionalState+CoreDataClass.swift */; };
+		A1B62C252D9D1E1E00DE3F11 /* EmotionalState+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B62C1D2D9D1E1E00DE3F11 /* EmotionalState+CoreDataProperties.swift */; };
+		A1B62C262D9D1E1E00DE3F11 /* Session+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B62C1E2D9D1E1E00DE3F11 /* Session+CoreDataClass.swift */; };
+		A1B62C272D9D1E1E00DE3F11 /* Session+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B62C1F2D9D1E1E00DE3F11 /* Session+CoreDataProperties.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,7 +61,21 @@
 		A11C88952D99B864002380A8 /* BioMirrorTherapyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BioMirrorTherapyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A11C889F2D99B864002380A8 /* BioMirrorTherapyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BioMirrorTherapyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A14F12322D99E1BE0095D042 /* BioMirrorTherapyWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BioMirrorTherapyWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1B62C1C2D9D1E1E00DE3F11 /* EmotionalState+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "EmotionalState+CoreDataClass.swift"; path = "BioMirrorTherapy/Data/LocalStorage/CoreData/EmotionalState+CoreDataClass.swift"; sourceTree = "<group>"; };
+		A1B62C1D2D9D1E1E00DE3F11 /* EmotionalState+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "EmotionalState+CoreDataProperties.swift"; path = "BioMirrorTherapy/Data/LocalStorage/CoreData/EmotionalState+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		A1B62C1E2D9D1E1E00DE3F11 /* Session+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Session+CoreDataClass.swift"; path = "BioMirrorTherapy/Data/LocalStorage/CoreData/Session+CoreDataClass.swift"; sourceTree = "<group>"; };
+		A1B62C1F2D9D1E1E00DE3F11 /* Session+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Session+CoreDataProperties.swift"; path = "BioMirrorTherapy/Data/LocalStorage/CoreData/Session+CoreDataProperties.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A1B62C1B2D9D1D8100DE3F11 /* Exceptions for "BioMirrorTherapyWatch Watch App" folder in "BioMirrorTherapy" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				BioMirror.xcdatamodeld,
+			);
+			target = A11C887F2D99B862002380A8 /* BioMirrorTherapy */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A11C88822D99B862002380A8 /* BioMirrorTherapy */ = {
@@ -73,6 +95,9 @@
 		};
 		A14F12332D99E1BE0095D042 /* BioMirrorTherapyWatch Watch App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A1B62C1B2D9D1D8100DE3F11 /* Exceptions for "BioMirrorTherapyWatch Watch App" folder in "BioMirrorTherapy" target */,
+			);
 			path = "BioMirrorTherapyWatch Watch App";
 			sourceTree = "<group>";
 		};
@@ -113,6 +138,10 @@
 		A11C88772D99B862002380A8 = {
 			isa = PBXGroup;
 			children = (
+				A1B62C1C2D9D1E1E00DE3F11 /* EmotionalState+CoreDataClass.swift */,
+				A1B62C1D2D9D1E1E00DE3F11 /* EmotionalState+CoreDataProperties.swift */,
+				A1B62C1E2D9D1E1E00DE3F11 /* Session+CoreDataClass.swift */,
+				A1B62C1F2D9D1E1E00DE3F11 /* Session+CoreDataProperties.swift */,
 				A11C88822D99B862002380A8 /* BioMirrorTherapy */,
 				A11C88982D99B864002380A8 /* BioMirrorTherapyTests */,
 				A11C88A22D99B864002380A8 /* BioMirrorTherapyUITests */,
@@ -311,6 +340,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1B62C202D9D1E1E00DE3F11 /* EmotionalState+CoreDataClass.swift in Sources */,
+				A1B62C212D9D1E1E00DE3F11 /* EmotionalState+CoreDataProperties.swift in Sources */,
+				A1B62C222D9D1E1E00DE3F11 /* Session+CoreDataClass.swift in Sources */,
+				A1B62C232D9D1E1E00DE3F11 /* Session+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -332,6 +365,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1B62C242D9D1E1E00DE3F11 /* EmotionalState+CoreDataClass.swift in Sources */,
+				A1B62C252D9D1E1E00DE3F11 /* EmotionalState+CoreDataProperties.swift in Sources */,
+				A1B62C262D9D1E1E00DE3F11 /* Session+CoreDataClass.swift in Sources */,
+				A1B62C272D9D1E1E00DE3F11 /* Session+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

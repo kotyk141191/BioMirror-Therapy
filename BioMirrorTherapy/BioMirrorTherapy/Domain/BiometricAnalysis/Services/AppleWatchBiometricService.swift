@@ -65,7 +65,7 @@ class AppleWatchBiometricService: NSObject, BiometricAnalysisService, WCSessionD
     // MARK: - BiometricAnalysisService Protocol Methods
     
     func startMonitoring() throws {
-        guard \!_isRunning else { return }
+        guard !_isRunning else { return }
         
         updateStatus(.initializing)
         
@@ -244,7 +244,7 @@ class AppleWatchBiometricService: NSObject, BiometricAnalysisService, WCSessionD
             guard let self = self, self.isRunning else { return }
             
             // Only use simulated data if we don't have real motion data
-            if \!self.motionManager.isDeviceMotionActive {
+            if !self.motionManager.isDeviceMotionActive {
                 self.generateSimulatedData()
             }
         }
@@ -476,4 +476,73 @@ class AppleWatchBiometricService: NSObject, BiometricAnalysisService, WCSessionD
         _currentPhysiologicalState = state
         physiologicalStateSubject.send(state)
     }
+                                     
+                                     // Add these methods to AppleWatchBiometricService
+                                     private func analyzeHRV(_ hrvData: Double) -> HRVMetrics {
+                                         // Analyze heart rate variability data
+                                         // In a real implementation, this would calculate SDNN, RMSSD, pNN50, etc.
+                                         
+                                         let sdnn = hrvData
+                                         let rmssd = hrvData * 1.2 // Approximate relationship
+                                         let pnn50 = max(0.0, (hrvData - 20) * 1.5) // Approximate relationship
+                                         let hrQuality = Float(min(1.0, max(0.1, hrvData / 100.0)))
+                                         
+                                         return HRVMetrics(
+                                             heartRate: latestHeartRate ?? 70,
+                                             heartRateVariability: hrvData,
+                                             rmssd: rmssd,
+                                             sdnn: sdnn,
+                                             pnn50: pnn50,
+                                             hrQuality: hrQuality
+                                         )
+                                     }
+
+                                     private func analyzeMotion(_ acceleration: CMAcceleration?) -> MotionMetrics {
+                                         guard let acceleration = acceleration else {
+                                             return MotionMetrics.empty
+                                         }
+                                         
+                                         // Calculate motion metrics from acceleration data
+                                         
+                                         // Calculate motion magnitude
+                                         let magnitude = sqrt(
+                                             pow(acceleration.x, 2) +
+                                             pow(acceleration.y, 2) +
+                                             pow(acceleration.z, 2)
+                                         )
+                                         
+                                         // Detect tremor (high-frequency oscillations)
+                                         let tremor = Float(min(1.0, magnitude * 5.0)) // Simplified detection
+                                         
+                                         // Detect freeze response (lack of movement)
+                                         let freezeIndex = Float(max(0.0, 1.0 - magnitude * 10.0)) // Simplified detection
+                                         
+                                         // Quality based on data completeness
+                                         let motionQuality: Float = 0.8
+                                         
+                                         return MotionMetrics(
+                                             acceleration: acceleration,
+                                             rotationRate: CMRotationRate(x: 0, y: 0, z: 0), // Not available in this simplified version
+                                             tremor: tremor,
+                                             freezeIndex: freezeIndex,
+                                             motionQuality: motionQuality
+                                         )
+                                     }
+
+                                     private func estimateRespiration() -> RespirationMetrics {
+                                         // In a complete implementation, this would use HRV and motion data to estimate respiration
+                                         // For now, we'll provide a simplified version
+                                         
+                                         let respirationRate = 12.0 + Double.random(in: -2...2) // ~12 breaths per minute
+                                         let irregularity = Double.random(in: 0...0.3) // Low irregularity
+                                         let depth = Double.random(in: 0.7...1.0) // Normal breathing depth
+                                         let respirationQuality: Float = 0.7 // Moderate quality due to estimation
+                                         
+                                         return RespirationMetrics(
+                                             respirationRate: respirationRate,
+                                             irregularity: irregularity,
+                                             depth: depth,
+                                             respirationQuality: respirationQuality
+                                         )
+                                     }
 }

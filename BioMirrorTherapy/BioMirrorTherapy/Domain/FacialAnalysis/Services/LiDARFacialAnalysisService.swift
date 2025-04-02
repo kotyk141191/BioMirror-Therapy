@@ -447,6 +447,89 @@ class LiDARFacialAnalysisService: NSObject, FacialAnalysisService {
         default: return "Unknown Action"
         }
     }
+    
+    
+    // Add this method to the LiDARFacialAnalysisService class
+    private func mapBlendShapesToFACS(_ blendShapes: [ARFaceAnchor.BlendShapeLocation: NSNumber]) -> [FacialActionUnit] {
+        var facialActionUnits: [FacialActionUnit] = []
+        
+        // Map ARKit blend shapes to FACS Action Units
+        let mappings: [(ARFaceAnchor.BlendShapeLocation, Int, String)] = [
+            (.browInnerUp, 1, "Inner Brow Raiser"),
+            (.browDownLeft, 4, "Brow Lowerer"),
+            (.browDownRight, 4, "Brow Lowerer"),
+            (.browOuterUpLeft, 2, "Outer Brow Raiser"),
+            (.browOuterUpRight, 2, "Outer Brow Raiser"),
+            (.eyeBlinkLeft, 45, "Lid Closure"),
+            (.eyeBlinkRight, 45, "Lid Closure"),
+            (.eyeSquintLeft, 7, "Lid Tightener"),
+            (.eyeSquintRight, 7, "Lid Tightener"),
+            (.eyeWideLeft, 5, "Upper Lid Raiser"),
+            (.eyeWideRight, 5, "Upper Lid Raiser"),
+            (.jawOpen, 26, "Jaw Drop"),
+            (.mouthFunnel, 22, "Lip Funneler"),
+            (.mouthPucker, 18, "Lip Puckerer"),
+            (.mouthSmileLeft, 12, "Lip Corner Puller"),
+            (.mouthSmileRight, 12, "Lip Corner Puller"),
+            (.mouthFrownLeft, 15, "Lip Corner Depressor"),
+            (.mouthFrownRight, 15, "Lip Corner Depressor"),
+            (.noseSneerLeft, 9, "Nose Wrinkler"),
+            (.noseSneerRight, 9, "Nose Wrinkler"),
+            (.cheekPuff, 34, "Cheek Puffer")
+        ]
+        
+        for (blendShapeLocation, actionUnitID, actionUnitName) in mappings {
+            if let value = blendShapes[blendShapeLocation]?.floatValue, value > 0.1 {
+                let actionUnit = FacialActionUnit(
+                    id: actionUnitID,
+                    name: actionUnitName,
+                    intensity: value
+                )
+                facialActionUnits.append(actionUnit)
+            }
+        }
+        
+        return facialActionUnits
+    }
+
+    // Add method to detect micro-expressions
+    private func detectMicroExpressions(_ currentFACS: [FacialActionUnit], previousFACS: [FacialActionUnit]) -> [MicroExpression] {
+        var microExpressions: [MicroExpression] = []
+        
+        // Detect rapid changes in facial action units
+        for currentAU in currentFACS {
+            if let previousAU = previousFACS.first(where: { $0.id == currentAU.id }) {
+                let intensityChange = currentAU.intensity - previousAU.intensity
+                
+                // Significant rapid change indicates micro-expression
+                if intensityChange > 0.3 && currentAU.intensity > 0.5 && previousAU.intensity < 0.2 {
+                    let emotion = inferEmotionFromActionUnit(currentAU.id)
+                    let microExpression = MicroExpression(
+                        timestamp: Date(),
+                        duration: 0.1, // Micro-expressions typically last 1/25 to 1/5 of a second
+                        emotionType: emotion,
+                        intensity: currentAU.intensity,
+                        facialActionUnits: [currentAU]
+                    )
+                    microExpressions.append(microExpression)
+                }
+            }
+        }
+        
+        return microExpressions
+    }
+
+    private func inferEmotionFromActionUnit(_ actionUnitID: Int) -> EmotionType {
+        switch actionUnitID {
+        case 1, 2: return .surprise // Inner and outer brow raiser
+        case 4: return .anger // Brow lowerer
+        case 5, 7: return .fear // Upper lid raiser, lid tightener
+        case 9: return .disgust // Nose wrinkler
+        case 12: return .happiness // Lip corner puller
+        case 15: return .sadness // Lip corner depressor
+        default: return .neutral
+        }
+    }
 }
 
 // MARK: - ARSessionDelegate
