@@ -180,6 +180,44 @@ class EmotionalCoherenceAnalyzer: EmotionalIntegrationService {
         )
     }
     
+    private func calculateDissociationIndex(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> Float {
+        // Dissociation indicators include:
+        // 1. Low facial expressivity (neutral, flat affect)
+        // 2. Freeze response in motion metrics
+        // 3. Disconnection between face and physiological response
+        
+        var dissociationScore: Float = 0.0
+        
+        // Check for flat affect (low intensity neutral face)
+        if emotionalState.primaryEmotion == .neutral && emotionalState.primaryIntensity < 0.3 {
+            dissociationScore += 0.4
+        }
+        
+        // Check for freeze response
+        if physiologicalState.motionMetrics.freezeIndex > 0.7 {
+            dissociationScore += 0.4
+        }
+        
+        // Check for characteristic dissociative HRV pattern
+        if physiologicalState.hrvMetrics.heartRateVariability < 20 &&
+           physiologicalState.hrvMetrics.heartRate < 70 {
+            dissociationScore += 0.3
+        }
+        
+        // Check for lack of micro-expressions
+        if emotionalState.microExpressions.isEmpty && emotionalState.confidence > 0.7 {
+            dissociationScore += 0.2
+        }
+        
+        // Factor in coherence (low coherence can indicate dissociation)
+        let coherence = calculateCoherenceIndex(emotionalState: emotionalState, physiologicalState: physiologicalState)
+        if coherence < 0.3 {
+            dissociationScore += 0.3 * (1.0 - coherence)
+        }
+        
+        return min(1.0, dissociationScore)
+    }
+    
     func calculateCoherenceIndex(emotionalState: EmotionalState, physiologicalState: PhysiologicalState) -> Float {
         // Get expected arousal range for the emotion
         let (minArousal, maxArousal) = expectedArousalRange(for: emotionalState.primaryEmotion)

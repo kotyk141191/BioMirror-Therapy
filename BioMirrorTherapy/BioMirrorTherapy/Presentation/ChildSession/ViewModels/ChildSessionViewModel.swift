@@ -580,7 +580,7 @@ extension ChildSessionViewModel {
         isLoading = true
         loadingMessage = "Setting up your session..."
         
-        // Initialize services
+        // Start services
         do {
             // Start facial analysis
             try facialAnalysisService?.startAnalysis()
@@ -589,21 +589,22 @@ extension ChildSessionViewModel {
             try biometricAnalysisService?.startMonitoring()
             
             // Create a new session
-            currentSession = TherapeuticSession(phase: .connection)
+            currentSession = therapeuticResponseService?.startSession(phase: .connection)
             
-            // Initialize character
-            updateCharacterConfiguration(CharacterConfiguration.default)
+            // Start emotional integration
+            emotionalIntegrationService?.startIntegration(sessionId: currentSession?.id.uuidString)
             
-            // Set initial activity
-            currentActivity = currentSession?.sessionPhase.recommendedActivities.first
-            
-            // Update UI after delay to show loading state
+            // Update UI
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                 self.isLoading = false
                 self.showEmotionFeedback = true
                 
-                // Start emotional integration
-                self.emotionalIntegrationService?.startIntegration(sessionId: self.currentSession?.id.uuidString)
+                // Set initial activity
+                self.currentActivity = self.currentSession?.sessionPhase.recommendedActivities.first
+                
+                // Update UI
+                self.sessionTitle = self.currentSession?.sessionPhase.name ?? "Therapy Session"
+                self.sessionInstructions = self.currentActivity?.instruction ?? ""
             }
         } catch {
             isLoading = false

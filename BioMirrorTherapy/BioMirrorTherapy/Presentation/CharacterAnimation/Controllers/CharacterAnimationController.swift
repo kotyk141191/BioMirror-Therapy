@@ -398,24 +398,29 @@ class CharacterAnimationController {
         playAnimation(.idle)
     }
     
-    private func updateCharacterAppearance() {
-        // Update character materials based on configuration
-        if let bodyEntity = bodyEntity {
-            bodyEntity.model?.materials = [
-                SimpleMaterial(color: characterConfiguration.primaryColor, roughness: 0.5, isMetallic: false)
-            ]
+    func updateCharacterAppearance(_ state: IntegratedEmotionalState) {
+        // Update character based on emotional state
+        if let characterState = determineCharacterState(from: state) {
+            characterNeedsUpdate = true
+            
+            // Apply expression to character
+            expressEmotion(
+                characterState.emotion,
+                intensity: characterState.intensity,
+                duration: 0
+            )
         }
-        
-        if let headEntity = headEntity {
-            headEntity.model?.materials = [
-                SimpleMaterial(color: characterConfiguration.secondaryColor, roughness: 0.3, isMetallic: false)
-            ]
-        }
-        
-        // Add accessories if specified in configuration
-        // (In a real app, this would load 3D models for accessories)
     }
     
+    
+    private func determineCharacterState(from state: IntegratedEmotionalState) -> (emotion: EmotionType, intensity: Float)? {
+        if state.dataQuality == .poor || state.dataQuality == .invalid {
+            return nil
+        }
+        
+        // For mirroring, return the dominant emotion with slightly reduced intensity
+        return (state.dominantEmotion, state.emotionalIntensity * 0.7)
+    }
     
     private func playAnimation(_ animationType: CharacterAnimationType) {
         // Stop any current animations first

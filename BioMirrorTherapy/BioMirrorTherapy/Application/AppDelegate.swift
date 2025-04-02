@@ -81,43 +81,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return AppleWatchBiometricService()
         }
         
-        // Register emotional integration service first
+        // Register safety monitor
+        let facialService: FacialAnalysisService = ServiceLocator.shared.resolve()
+        let biometricService: BiometricAnalysisService = ServiceLocator.shared.resolve()
+        
         let emotionalIntegrationService = EmotionalCoherenceAnalyzer(
-            facialAnalysisService: LiDARFacialAnalysisService(),
-            biometricAnalysisService: AppleWatchBiometricService()
+            facialAnalysisService: facialService,
+            biometricAnalysisService: biometricService
         )
+        
         ServiceLocator.shared.register(EmotionalIntegrationService.self) {
             return emotionalIntegrationService
         }
-
-        // Register safety monitor with the emotionalIntegrationService
+        
         let safetyMonitor = SafetyMonitor(emotionalIntegrationService: emotionalIntegrationService)
         ServiceLocator.shared.register(SafetyMonitor.self) {
             return safetyMonitor
         }
         
-        // Register emotional integration service
-        ServiceLocator.shared.register(EmotionalIntegrationService.self) {
-            let facialService: FacialAnalysisService = ServiceLocator.shared.resolve()
-            let biometricService: BiometricAnalysisService = ServiceLocator.shared.resolve()
-            return EmotionalCoherenceAnalyzer(facialAnalysisService: facialService, biometricAnalysisService: biometricService)
-        }
-        
         // Register therapeutic response service
         ServiceLocator.shared.register(TherapeuticResponseService.self) {
-            let integrationService: EmotionalIntegrationService = ServiceLocator.shared.resolve()
-            let safetyMonitor: SafetyMonitor = ServiceLocator.shared.resolve()
-            return AdaptiveResponseGenerator(emotionalIntegrationService: integrationService, safetyMonitor: safetyMonitor)
+            return AdaptiveResponseGenerator(
+                emotionalIntegrationService: emotionalIntegrationService,
+                safetyMonitor: safetyMonitor
+            )
         }
         
         // Register progress tracker
         ServiceLocator.shared.register(ProgressTracker.self) {
             return ProgressTracker()
-        }
-        
-        // Register emergency contact manager
-        ServiceLocator.shared.register(EmergencyContactManager.self) {
-            return EmergencyContactManager()
         }
     }
     
