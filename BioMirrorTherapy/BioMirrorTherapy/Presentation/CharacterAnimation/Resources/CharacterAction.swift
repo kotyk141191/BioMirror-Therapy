@@ -7,18 +7,19 @@
 
 import Foundation
 
-enum CharacterAction {
-    case facialExpression(emotion: EmotionType, intensity: Float)
-    case breathing(speed: Float, depth: Float)
-    case grounding(type: GroundingTechnique)
-    case movement(direction: MovementDirection, speed: Float)
-    case gesture(type: GestureType, speed: Float)
-}
 
-enum GroundingTechnique {
+enum CharacterGroundingTechnique {
     case visual
     case auditory
     case tactile
+}
+
+enum CharacterAnimationAction {
+    case facialExpression(emotion: EmotionType, intensity: Float)
+    case breathing(speed: Float, depth: Float)
+    case grounding(type: CharacterGroundingTechnique) // Updated type
+    case movement(direction: MovementDirection, speed: Float)
+    case gesture(type: GestureType, speed: Float)
 }
 
 enum MovementDirection {

@@ -45,10 +45,10 @@ struct ResponsePreferences {
 //    case playful
 //}
 //
-//enum GroundingTechnique {
-//    case breathing
-//    case sensory
-//    case movement
-//    case cognitive
-//    case naming
-//}
+enum GroundingTechnique {
+    case breathing
+    case sensory
+    case movement
+    case cognitive
+    case naming
+}
